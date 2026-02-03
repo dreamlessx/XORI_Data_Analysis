@@ -1,0 +1,30 @@
+MIXED-EFFECTS MODEL RESULTS
+============================================================
+
+Model: metric ~ fixed_effects + (1|site)
+Random intercept for each recording site
+
+
+ms_simple:
+  depth_coef: -9.299378559482129
+  depth_pval: 7.920607304397323e-10
+  aic: nan
+
+ms_controlled:
+  depth_coef: -8.639655199439705
+  depth_pval: 2.1574682120345188e-08
+  radius_coef: 1.2801914122104858
+  radius_pval: 0.0006894156128117272
+  aic: nan
+
+mc_simple:
+  depth_coef: 0.08632903986911307
+  depth_pval: 1.693184331917295e-11
+  aic: nan
+
+mc_controlled:
+  depth_coef: 0.03563659275092775
+  depth_pval: 0.15111395865717986
+  radius_coef: 0.017227128725292674
+  radius_pval: 0.00011948400256400304
+  aic: nan
