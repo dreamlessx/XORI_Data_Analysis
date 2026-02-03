@@ -500,7 +500,6 @@ python scripts/bm_calc/baseline_analysis.py
 
 ## Contact
 
-For questions or issues, contact:
-rajagar@uw.edu
+Bair Lab, Department of Neurobiology & Biophysics, University of Washington
 
 ## TODO List

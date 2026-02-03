@@ -1,99 +1,118 @@
 # XORI Data Analysis
 
-Depth-dependent cross-orientation suppression in macaque V1 measured via two-photon calcium imaging. Analyzes how cross-orientation interaction metrics (M_S, M_C) vary across cortical layers using 4,785 ROIs from 28 recording sites spanning 140–518 μm depth.
+Analysis of depth-dependent cross-orientation interactions in macaque V1 layer 2/3, measured with two-photon calcium imaging (PHP.eB-CAG-GCaMP6s). Orthogonal plaids are compared against a linear prediction (sum of component grating responses with baseline correction) to quantify normalization across ~400 μm of cortical depth using ~5,000 ROIs detected with Suite2p across 28 fields of view.
+
+**Bair Lab** — Department of Neurobiology & Biophysics, University of Washington, Seattle, WA
+
+## Background
+
+The long-term goal is to combine large-scale functional imaging with dense connectomics to relate circuit wiring to population computation in primate V1. Neurons are presented with drifting sine gratings and orthogonal plaids (each 50% contrast; 4 Hz; 4 cyc/deg; 2° patch). For each ROI, a linear reference is built by shifting the single-grating tuning curve by -90° and summing with baseline correction. Deviation from this linear prediction is quantified with two complementary metrics:
+
+- **S** (`M_S_ratio` in code) — Ratio of observed plaid response to linear prediction. Values >1 indicate facilitation (observed exceeds prediction); values <1 indicate suppression (observed falls below prediction). This is the primary metric used in current analyses. (A legacy signed-difference version, `M_S`, is also computed but no longer the focus.)
+- **R** (`M_C` in code) — Pearson correlation between predicted and observed plaid tuning curves, indexing shape similarity. Higher values indicate that plaid tuning is more linearly predictable from component grating responses.
 
 ## Key Findings
 
 | Metric | Correlation with Depth | 95% CI | p-value |
 |--------|----------------------|--------|---------|
-| M_S (additive component) | r = −0.768 | [−0.908, −0.617] | 1.83 × 10⁻⁶ |
-| M_C (response correlation) | r = +0.798 | [+0.675, +0.891] | 3.67 × 10⁻⁷ |
+| S (suppression/facilitation) | r = -0.768 | [-0.908, -0.617] | 1.83 x 10^-6 |
+| R (shape similarity) | r = +0.798 | [+0.675, +0.891] | 3.67 x 10^-7 |
 
-- M_S (cross-orientation suppression) decreases with cortical depth — superficial layers show facilitation, deep layers show suppression
-- M_C (grating–plaid response correlation) increases with depth
-- Effects survive partial correlation controls for ROI morphology, SNR, OSI, and spatial frequency
-- Mixed-effects models confirm M_S–depth relationship at the single-ROI level (p = 7.9 × 10⁻¹⁰)
+- **S decreases with depth**: Positive (facilitation) in superficial layer 2/3, crossing zero, then negative (suppression) in deeper layer 2/3 -- consistent with stronger cross-orientation normalization at depth
+- **R increases with depth**: Plaid tuning shapes become more linearly predictable deeper in layer 2/3, even as mean responses fall below the linear sum
+- Effects are robust to SNR thresholds and hold in both dF/F and raw fluorescence units
+- Mixed-effects models confirm S-depth relationship at the single-ROI level (p = 7.9 x 10^-10)
+- Spatial frequency preference mediates ~40% of the S-depth effect; tuning bandwidth mediates ~21%
 
 ## Repository Structure
 
 ```
 XORI/
 ├── raw_data/                  # Raw experimental data
-│   ├── bm_data/               # Behavioral/metric source files
-│   │   ├── site_depth.txt     # Site-to-depth mapping (28 sites)
-│   │   ├── roi_osi.txt        # Orientation selectivity data (4,785 ROIs)
-│   │   ├── roi_stat.txt       # ROI morphology (radius, aspect ratio, etc.)
-│   │   ├── roi_hw_orth.txt    # Half-width tuning data
+│   ├── bm_data/               # ROI-level measurements
+│   │   ├── site_depth.txt     # Field-of-view to depth mapping (28 sites)
+│   │   ├── roi_osi.txt        # Orientation/direction selectivity (4,785 ROIs)
+│   │   ├── roi_stat.txt       # ROI morphology from Suite2p (radius, aspect ratio, etc.)
+│   │   ├── roi_hw_orth.txt    # Orientation tuning half-width
 │   │   ├── roi_lhi.txt        # Local homogeneity index
 │   │   └── roi_sf.txt         # Spatial frequency preferences
-│   └── tc_data/               # Tuning curve data per site
-├── metric_data/               # Computed cross-orientation metrics per site
+│   └── tc_data/               # Tuning curve response data per site
+├── metric_data/               # Computed cross-orientation metrics (S, R) per site
 │   ├── all_roi/               # All ROIs (primary analysis)
-│   ├── cull_roi/              # SNR-filtered subsets (top 70/80/90%)
+│   ├── cull_roi/              # High-SNR subsets (top 70/80/90%)
 │   └── r_cull_roi/            # Low-SNR subsets (quality control)
 ├── depth_data/                # Depth analysis outputs (plots, ROI maps)
-├── data_baseline/             # Baseline fluorescence analysis
-├── data_halfwidth/            # Tuning half-width analysis
-├── data_spatial/              # Spatial frequency analysis
-├── data_osi/                  # Orientation selectivity analysis
-├── data_size/                 # ROI size control analysis
-├── data_lhi/                  # Local homogeneity analysis
+├── data_baseline/             # Baseline fluorescence vs depth
+├── data_halfwidth/            # Tuning half-width vs depth
+├── data_spatial/              # Spatial frequency preference vs depth
+├── data_osi/                  # Orientation selectivity vs depth
+├── data_size/                 # ROI size confound analysis
+├── data_lhi/                  # Local homogeneity vs depth
 ├── scripts/                   # Core analysis scripts
-│   ├── m_calc/                # Metric calculation
+│   ├── m_calc/                # Metric calculation from tuning curves
 │   ├── d_calc/                # Depth correlation analysis
-│   └── bm_calc/               # Baseline/metric relationship scripts
+│   └── bm_calc/               # Covariate-metric relationship scripts
 ├── supplementary_analysis/    # Extended statistical analyses
-│   ├── scripts/               # Supplementary analysis scripts
-│   │   ├── run_all_analyses.py        # Subpopulation, partial correlations, bootstrap
+│   ├── scripts/
+│   │   ├── run_all_analyses.py        # Subpopulation splits, partial correlations, bootstrap
 │   │   ├── additional_analyses.py     # Mixed-effects models, ROI size controls
-│   │   └── extended_analyses.py       # Multi-metric profiles, mediation analysis
+│   │   └── extended_analyses.py       # Multi-metric depth profiles, mediation analysis
 │   ├── outputs/               # Figures and results
 │   └── METHODS.md             # Draft methods section for publication
-├── stat/                      # Suite2p stat files (ROI masks)
+├── stat/                      # Suite2p stat files (ROI spatial masks)
 └── zz_Playground/             # Development workspace
 ```
 
 ## Metrics
 
-- **M_S** — Additive component of cross-orientation interaction (plaid − grating response). Positive = facilitation, negative = suppression.
-- **M_C** — Correlation between grating and plaid responses across conditions.
-- **M_S_norm** — M_S normalized as percentage of baseline response.
-- **M_S_ratio** — Ratio of plaid to grating response.
-- **M_X** — Cross-orientation metric (additional measure).
-- **SNR_g / SNR_p** — Signal-to-noise ratios for grating and plaid responses.
+All metrics are computed per ROI from grating and plaid tuning curve responses.
+
+| Code name | Paper name | Description | Status |
+|-----------|------------|-------------|--------|
+| `M_S_ratio` | **S** | Ratio of observed plaid response to linear prediction. >1 = facilitation, <1 = suppression. | **Primary metric** |
+| `M_C` | **R** | Pearson correlation between predicted and observed plaid tuning curves (shape similarity). | **Primary metric** |
+| `M_S` | -- | Mean signed difference (observed - predicted). Legacy version of S, retained for comparison. | Legacy |
+| `M_S_norm` | -- | Signed difference normalized as percentage of baseline fluorescence. | Legacy |
+| `M_X` | -- | Additional cross-orientation metric. | Secondary |
+| `SNR_g` | -- | Signal-to-noise ratio for grating responses. | Quality filter |
+| `SNR_p` | -- | Signal-to-noise ratio for plaid responses. | Quality filter |
 
 ## Setup
 
 ```bash
-# Create and activate virtual environment
 python -m venv .venv
 source .venv/bin/activate
-
-# Install dependencies
 pip install numpy pandas matplotlib scipy statsmodels
 ```
 
 ## Running Analyses
 
-### Core depth analysis
+### Metric calculation from tuning curves
+```bash
+python scripts/m_calc/all_metric.py
+```
+
+### Core depth analysis (ROI maps + depth vs metric plots)
 ```bash
 python scripts/d_calc/depth.py
 ```
 
-### Baseline, halfwidth, spatial frequency, OSI analyses
+### Covariate analyses (baseline, halfwidth, SF, OSI, LHI, ROI size)
 ```bash
 python scripts/bm_calc/baseline.py
 python scripts/bm_calc/halfwidth.py
 python scripts/bm_calc/spatial.py
 python scripts/bm_calc/osi.py
+python scripts/bm_calc/lhi.py
+python scripts/bm_calc/size.py
 ```
 
-### Supplementary analyses
+### Supplementary statistical analyses
 ```bash
-# Subpopulation analysis, partial correlations, bootstrap
+# Subpopulation analysis, partial correlations, bootstrap CIs
 python supplementary_analysis/scripts/run_all_analyses.py
 
-# Mixed-effects models, ROI size confound controls
+# Mixed-effects models, ROI size confound controls, publication figure
 python supplementary_analysis/scripts/additional_analyses.py
 
 # Multi-metric depth profiles, mediation analysis
@@ -102,11 +121,11 @@ python supplementary_analysis/scripts/extended_analyses.py
 
 ## Methods
 
-See [supplementary_analysis/METHODS.md](supplementary_analysis/METHODS.md) for a draft methods section with full statistical details, key statistics tables, and suggested figure legends.
+See [supplementary_analysis/METHODS.md](supplementary_analysis/METHODS.md) for a draft methods section with statistical details, key statistics tables, and suggested figure legends.
 
 ## Data Format
 
-Input metric files (`metric_data/all_roi/metrics_siteXXX.txt`):
+Cross-orientation metric files (`metric_data/all_roi/metrics_siteXXX.txt`):
 ```
 ROI    M_S         M_C        SNR_g      SNR_p      M_S_norm   M_S_ratio   M_X
 0      -43.738     0.51768    3.4882     0.93075    -15.137    0.66355     ...
@@ -124,16 +143,9 @@ site003     160
 ## Dependencies
 
 - Python 3.10+
-- NumPy
-- Pandas
-- Matplotlib
-- SciPy
-- statsmodels
-
-## Author
-
-Mudit Agar (rajagar@uw.edu)
+- NumPy, Pandas, Matplotlib, SciPy, statsmodels
+- Suite2p (for ROI detection, run separately)
 
 ## License
 
-This repository contains research data and analysis code. Please contact the author before reuse.
+This repository contains research data and analysis code. Contact the lab before reuse.
