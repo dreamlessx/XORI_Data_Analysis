@@ -82,7 +82,7 @@ All metrics are computed per ROI from grating and plaid tuning curve responses.
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install numpy pandas matplotlib scipy statsmodels
+pip install -r requirements.txt
 ```
 
 ## Running Analyses

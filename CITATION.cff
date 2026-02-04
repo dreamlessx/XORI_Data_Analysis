@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this data or code, please cite as below."
+title: "XORI Data Analysis: Depth-dependent cross-orientation interactions in macaque V1"
+type: dataset
+authors:
+  - affiliation: "Department of Neurobiology & Biophysics, University of Washington"
+    name: "Bair Lab"
+keywords:
+  - two-photon calcium imaging
+  - cross-orientation suppression
+  - macaque V1
+  - cortical depth
+  - normalization
+  - visual cortex
+  - laminar processing
+repository-code: "https://github.com/dreamlessx/XORI_Data_Analysis"
+license: CC-BY-NC-4.0
