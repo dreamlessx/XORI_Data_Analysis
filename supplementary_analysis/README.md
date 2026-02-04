@@ -245,7 +245,7 @@ Partial correlations identifying which covariates mediate the S-Depth relationsh
 
 | Control Variable | Partial r | % Reduction |
 |-----------------|-----------|-------------|
-| None (baseline) | -0.768 | -- |
+| None (baseline) | -0.768 | |
 | + SF | -0.463 | 40% |
 | + Halfwidth | -0.605 | 21% |
 | + LHI | -0.697 | 9% |

@@ -1,15 +1,29 @@
 # XORI Data Analysis
 
-Analysis of depth-dependent cross-orientation interactions in macaque V1 layer 2/3, measured with two-photon calcium imaging (PHP.eB-CAG-GCaMP6s). Orthogonal plaids are compared against a linear prediction (sum of component grating responses with baseline correction) to quantify normalization across ~400 μm of cortical depth using ~5,000 ROIs detected with Suite2p across 28 fields of view.
+Analysis of depth-dependent cross-orientation interactions in macaque V1 layer 2/3, measured with two-photon calcium imaging (PHP.eB-CAG-GCaMP6s). Orthogonal plaids are compared against a linear prediction (sum of component grating responses with baseline correction) to quantify normalization across approximately 400 um of cortical depth using nearly 5,000 ROIs detected with Suite2p across 28 fields of view.
 
-**Bair Lab** — Department of Neurobiology & Biophysics, University of Washington, Seattle, WA
+**Bair Lab** | Department of Neurobiology and Biophysics, University of Washington, Seattle, WA
+
+In collaboration with the Allen Institute for Brain Science and Washington National Primate Research Center.
+
+---
 
 ## Background
 
-The long-term goal is to combine large-scale functional imaging with dense connectomics to relate circuit wiring to population computation in primate V1. Neurons are presented with drifting sine gratings and orthogonal plaids (each 50% contrast; 4 Hz; 4 cyc/deg; 2° patch). For each ROI, a linear reference is built by shifting the single-grating tuning curve by -90° and summing with baseline correction. Deviation from this linear prediction is quantified with two complementary metrics:
+Cross-orientation suppression (COS) is a hallmark of normalization in primary visual cortex: when two gratings at orthogonal orientations are superimposed into a plaid, the response of an orientation-selective neuron typically falls below the linear sum of its responses to each grating presented alone (Morrone et al., 1982; Bonds, 1989; Carandini et al., 1997; Freeman et al., 2002). This suppression is well described by divisive normalization models (Heeger, 1992; Carandini and Heeger, 2012) and has been studied extensively in cat and macaque V1 with single-unit electrophysiology (DeAngelis et al., 1992; Carandini et al., 1997; Busse et al., 2009; Smith et al., 2006).
 
-- **S** (`M_S_ratio` in code) — Ratio of observed plaid response to linear prediction. Values >1 indicate facilitation (observed exceeds prediction); values <1 indicate suppression (observed falls below prediction). This is the primary metric used in current analyses. (A legacy signed-difference version, `M_S`, is also computed but no longer the focus.)
-- **R** (`M_C` in code) — Pearson correlation between predicted and observed plaid tuning curves, indexing shape similarity. Higher values indicate that plaid tuning is more linearly predictable from component grating responses.
+However, nearly all prior work measured COS one neuron at a time, leaving open how suppression and facilitation are distributed across neural populations and whether they vary systematically with cortical depth. Layer 2/3 of macaque V1 spans several hundred micrometers and contains multiple sublayers with distinct connectivity patterns, cell-type distributions, and functional properties (Callaway, 1998; Briggs, 2010). Whether cross-orientation interactions change across this depth range has not been directly tested.
+
+The long-term goal of this project is to combine large-scale functional imaging with dense connectomics to relate circuit wiring to population computation in primate V1. Using two-photon calcium imaging in anesthetized macaque, we target wide cortical blocks so that the physiology of as many neurons as possible can be compared post-mortem to serial EM reconstructions from the same tissue.
+
+### Approach
+
+Neurons are presented with drifting sine gratings and orthogonal plaids (each 50% contrast; 4 Hz; 4 cyc/deg; 2 deg patch), alongside RF maps from flashed light/dark spots and measurements of direction and spatial-frequency preferences. For each ROI, a linear prediction is built by shifting the single-grating tuning curve by -90 deg and summing with baseline correction. Deviation from this linear prediction is quantified with two complementary metrics:
+
+- **S** (`M_S_ratio` in code): Ratio of the observed plaid response to the linear prediction. Values greater than 1 indicate facilitation (observed exceeds prediction); values less than 1 indicate suppression (observed falls below prediction). This is the primary metric used in current analyses. A legacy signed-difference version (`M_S`) is also computed but is no longer the focus.
+- **R** (`M_C` in code): Pearson correlation between the predicted and observed plaid tuning curves, indexing shape similarity. Higher values indicate that plaid tuning is more linearly predictable from component grating responses.
+
+---
 
 ## Key Findings
 
@@ -18,11 +32,30 @@ The long-term goal is to combine large-scale functional imaging with dense conne
 | S (suppression/facilitation) | r = -0.768 | [-0.908, -0.617] | 1.83 x 10^-6 |
 | R (shape similarity) | r = +0.798 | [+0.675, +0.891] | 3.67 x 10^-7 |
 
-- **S decreases with depth**: Positive (facilitation) in superficial layer 2/3, crossing zero, then negative (suppression) in deeper layer 2/3 -- consistent with stronger cross-orientation normalization at depth
-- **R increases with depth**: Plaid tuning shapes become more linearly predictable deeper in layer 2/3, even as mean responses fall below the linear sum
-- Effects are robust to SNR thresholds and hold in both dF/F and raw fluorescence units
-- Mixed-effects models confirm S-depth relationship at the single-ROI level (p = 7.9 x 10^-10)
-- Spatial frequency preference mediates ~40% of the S-depth effect; tuning bandwidth mediates ~21%
+- **S decreases with depth**: positive (facilitation) in superficial layer 2/3, crossing zero, then negative (suppression) in deeper layer 2/3, consistent with stronger cross-orientation normalization at depth.
+- **R increases with depth**: plaid tuning shapes become more linearly predictable deeper in layer 2/3, even as mean responses fall below the linear sum.
+- Effects are robust to SNR thresholds and hold in both dF/F and raw fluorescence units.
+- Mixed-effects models confirm the S-depth relationship at the single-ROI level (p = 7.9 x 10^-10).
+- Spatial frequency preference mediates approximately 40% of the S-depth effect; tuning bandwidth mediates approximately 21%.
+
+### Depth Profile Summary
+
+Eight metrics show coordinated depth-dependent changes across layer 2/3:
+
+| Deeper in Layer 2/3 | Direction |
+|---------------------|-----------|
+| ROI size (radius, npix) | Increases |
+| Baseline fluorescence | Increases |
+| SNR | Increases |
+| Orientation tuning bandwidth | Broader |
+| Preferred spatial frequency | Lower |
+| Orientation selectivity (OSI) | Lower |
+| Local homogeneity (LHI) | Lower |
+| Cross-orientation suppression (S) | Stronger (more suppressive) |
+
+Superficial layer 2/3 is characterized by high SF preference, narrow tuning, high OSI, high local homogeneity, and facilitation. Deeper layer 2/3 is characterized by low SF preference, broad tuning, low OSI, low local homogeneity, and suppression.
+
+---
 
 ## Repository Structure
 
@@ -63,19 +96,23 @@ XORI/
 └── zz_Playground/             # Development workspace
 ```
 
+---
+
 ## Metrics
 
 All metrics are computed per ROI from grating and plaid tuning curve responses.
 
 | Code name | Paper name | Description | Status |
 |-----------|------------|-------------|--------|
-| `M_S_ratio` | **S** | Ratio of observed plaid response to linear prediction. >1 = facilitation, <1 = suppression. | **Primary metric** |
-| `M_C` | **R** | Pearson correlation between predicted and observed plaid tuning curves (shape similarity). | **Primary metric** |
-| `M_S` | -- | Mean signed difference (observed - predicted). Legacy version of S, retained for comparison. | Legacy |
-| `M_S_norm` | -- | Signed difference normalized as percentage of baseline fluorescence. | Legacy |
-| `M_X` | -- | Additional cross-orientation metric. | Secondary |
-| `SNR_g` | -- | Signal-to-noise ratio for grating responses. | Quality filter |
-| `SNR_p` | -- | Signal-to-noise ratio for plaid responses. | Quality filter |
+| `M_S_ratio` | **S** | Ratio of observed plaid response to linear prediction. >1 = facilitation, <1 = suppression. | **Primary** |
+| `M_C` | **R** | Pearson correlation between predicted and observed plaid tuning curves (shape similarity). | **Primary** |
+| `M_S` | | Mean signed difference (observed minus predicted). Legacy version of S, retained for comparison. | Legacy |
+| `M_S_norm` | | Signed difference normalized as percentage of baseline fluorescence. | Legacy |
+| `M_X` | | Additional cross-orientation suppression metric. | Secondary |
+| `SNR_g` | | Signal-to-noise ratio for grating responses. | Quality filter |
+| `SNR_p` | | Signal-to-noise ratio for plaid responses. | Quality filter |
+
+---
 
 ## Setup
 
@@ -119,9 +156,13 @@ python supplementary_analysis/scripts/additional_analyses.py
 python supplementary_analysis/scripts/extended_analyses.py
 ```
 
+---
+
 ## Methods
 
 See [supplementary_analysis/METHODS.md](supplementary_analysis/METHODS.md) for a draft methods section with statistical details, key statistics tables, and suggested figure legends.
+
+---
 
 ## Data Format
 
@@ -139,6 +180,38 @@ site002     168
 site003     160
 ...
 ```
+
+---
+
+## References
+
+Bonds, A. B. (1989). Role of inhibition in the specification of orientation selectivity of cells in the cat striate cortex. *Visual Neuroscience*, 2(1), 41-55.
+
+Briggs, F. (2010). Organizing principles of cortical layer 6. *Frontiers in Neural Circuits*, 4, 3.
+
+Busse, L., Wade, A. R., and Carandini, M. (2009). Representation of concurrent stimuli by population activity in visual cortex. *Neuron*, 64(6), 931-942.
+
+Callaway, E. M. (1998). Local circuits in primary visual cortex of the macaque monkey. *Annual Review of Neuroscience*, 21, 47-74.
+
+Carandini, M., and Heeger, D. J. (2012). Normalization as a canonical neural computation. *Nature Reviews Neuroscience*, 13(1), 51-62.
+
+Carandini, M., Heeger, D. J., and Movshon, J. A. (1997). Linearity and normalization in simple cells of the macaque primary visual cortex. *Journal of Neuroscience*, 17(21), 8621-8644.
+
+DeAngelis, G. C., Robson, J. G., Ohzawa, I., and Freeman, R. D. (1992). Organization of suppression in receptive fields of neurons in cat visual cortex. *Journal of Neurophysiology*, 68(1), 144-163.
+
+Freeman, T. C. B., Durand, S., Kiper, D. C., and Carandini, M. (2002). Suppression without inhibition in visual cortex. *Neuron*, 35(4), 759-771.
+
+Heeger, D. J. (1992). Normalization of cell responses in cat striate cortex. *Visual Neuroscience*, 9(2), 181-197.
+
+Morrone, M. C., Burr, D. C., and Maffei, L. (1982). Functional implications of cross-orientation inhibition of cortical visual cells. I. Neurophysiological evidence. *Proceedings of the Royal Society of London B*, 216(1204), 335-354.
+
+Pachitariu, M., Stringer, C., Dipoppa, M., Schroeder, S., Rossi, L. F., Dalgleish, H., Carandini, M., and Harris, K. D. (2017). Suite2p: beyond 10,000 neurons with standard two-photon microscopy. *bioRxiv*, 061507.
+
+Ringach, D. L., Shapley, R. M., and Hawken, M. J. (2002). Orientation selectivity in macaque V1: diversity and laminar dependence. *Journal of Neuroscience*, 22(13), 5639-5651.
+
+Smith, M. A., Bair, W., and Movshon, J. A. (2006). Dynamics of suppression in macaque primary visual cortex. *Journal of Neuroscience*, 26(18), 4826-4834.
+
+---
 
 ## Dependencies
 
