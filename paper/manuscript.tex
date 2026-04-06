@@ -229,9 +229,9 @@ where $R_i^{\text{plaid}}$ is the baseline-subtracted plaid response at
 direction $i$. Values of $P > 1$ indicate facilitation (the observed plaid
 response exceeds the linear prediction), $P < 1$ indicates suppression
 (the observed response falls below the prediction), and $P = 1$ indicates
-perfect linearity. For statistical analysis and visualization, $P$ was
-$\log_2$-transformed so that values above zero indicate facilitation, values
-below zero indicate suppression, and the neutral point maps to zero.
+perfect linearity. Because $P$ is a ratio, it is plotted on a logarithmic
+axis so that equal distances represent equal multiplicative changes and the
+neutral point ($P = 1$) falls at the center of the scale.
 
 \subsubsection{Metric C: shape similarity}
 
@@ -381,25 +381,24 @@ to a linear prediction derived from the grating tuning curve.
 
 \subsection{Cross-orientation suppression increases with cortical depth}
 
-The $\log_2$-transformed metric $P$ showed a strong negative correlation
-with cortical depth at the site level ($r = -0.706$,
-$p = 2.72 \times 10^{-5}$, $n = 28$; Figure~\ref{fig:depth}A). Superficial
-sites (140--266~$\mu$m) exhibited $\log_2(P) > 0$ (i.e., $P > 1$),
-indicating facilitation---the observed plaid response exceeded the linear
-prediction. Deeper sites (392--518~$\mu$m) exhibited $\log_2(P) < 0$
-(i.e., $P < 1$), indicating suppression. The transition from facilitation to
-suppression occurred at approximately 350~$\mu$m depth.
+Metric $P$ showed a strong negative correlation with cortical depth at the
+site level ($r = -0.706$, $p = 2.72 \times 10^{-5}$, $n = 28$;
+Figure~\ref{fig:depth}A). Superficial sites (140--266~$\mu$m) exhibited
+$P > 1$, indicating facilitation---the observed plaid response exceeded the
+linear prediction. Deeper sites (392--518~$\mu$m) exhibited $P < 1$,
+indicating suppression. The transition from facilitation to suppression
+occurred at approximately 350~$\mu$m depth.
 
 % --- Figure 3: P and C vs depth ---
 \begin{figure}[tbp]
   \centering
   % \includegraphics[width=\textwidth]{figures/fig3_depth.pdf}
   \caption{\textbf{Depth-dependent changes in cross-orientation metrics.}
-  \textbf{(A)}~$\log_2(P)$ (suppression/facilitation ratio) decreased with
+  \textbf{(A)}~Metric $P$ (suppression/facilitation ratio) decreased with
   cortical depth ($r = -0.706$, $p = 2.72 \times 10^{-5}$, $n = 28$). Each
-  point represents the site-mean $\log_2(P)$ across all ROIs at one imaging
-  depth. Dashed line shows linear regression. $\log_2(P) > 0$ ($P > 1$):
-  facilitation; $\log_2(P) < 0$ ($P < 1$): suppression.
+  point represents the site-mean $P$ across all ROIs at one imaging depth,
+  plotted on a logarithmic axis. Dashed line shows linear regression.
+  $P > 1$: facilitation; $P < 1$: suppression.
   \textbf{(B)}~Metric $C$ (shape similarity) increased with depth
   ($r = +0.798$, $p = 3.67 \times 10^{-7}$). Higher $C$ indicates the plaid
   tuning curve shape is more linearly predictable from grating responses.
@@ -430,7 +429,7 @@ sites, spatial frequency showed weak correlations with $P$ (significant at
 strongly predict $P$ within a single imaging plane. However, across the
 full depth range, mediation analysis revealed that spatial frequency
 preference accounted for approximately 40\% of the $P$--depth correlation:
-the partial correlation between $\log_2(P)$ and depth controlling for spatial
+the partial correlation between $P$ and depth controlling for spatial
 frequency was $r = -0.424$ (compared to $r = -0.706$ at zero order;
 Table~\ref{tab:mediation}).
 
