@@ -27,3 +27,7 @@ Thumbs.db
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Claude tooling
+.claude-flow/
+.claude/
