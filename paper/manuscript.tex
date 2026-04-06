@@ -344,29 +344,28 @@ drifting sinusoidal gratings and orthogonal plaids, and cross-orientation
 interaction metrics were computed by comparing the observed plaid response
 to a linear prediction derived from the grating tuning curve.
 
-% --- Figure 1: Stimuli and example tuning curves ---
+% --- Figure 1: Example tuning curves ---
 \begin{figure}[tbp]
   \centering
-  % \includegraphics[width=\textwidth]{figures/fig1_stimuli.pdf}
-  \caption{\textbf{Visual stimuli and example cross-orientation analysis.}
-  \textbf{(A)}~Schematic of grating and plaid stimuli. Drifting sinusoidal
-  gratings (4~Hz, 4~cyc/deg, 50\% contrast) were presented at 12 directions
-  (30$^{\circ}$ increments). Plaid stimuli were formed by superimposing two
-  orthogonal gratings.
-  \textbf{(B)}~Example grating tuning curve (blue) and the linear prediction
-  for the plaid (dashed), constructed by shifting the grating curve by
-  $-90^{\circ}$ and summing.
-  \textbf{(C)}~Observed plaid tuning curve (red) compared to the linear
-  prediction (dashed). In this example neuron, the observed plaid response
-  falls below the prediction ($P < 1$), indicating cross-orientation
-  suppression.}
+  \includegraphics[width=\textwidth]{figures/fig1_tuning_curves.pdf}
+  \caption{\textbf{Example cross-orientation analysis at shallow and deep
+  cortical depths.}
+  \textbf{(A)}~Grating tuning curve ($\Delta F$) for an example ROI at a
+  shallow site (242~$\mu$m).
+  \textbf{(B)}~Observed plaid response (red) versus linear prediction
+  (dashed gray) for the same ROI. $P = 3.35$, indicating strong
+  facilitation.
+  \textbf{(C)}~Grating tuning curve for an example ROI at a deep site
+  (482~$\mu$m).
+  \textbf{(D)}~Observed plaid response versus prediction for the deep ROI.
+  $P = 0.66$, indicating suppression. Error bars show SEM across trials.}
   \label{fig:stimuli}
 \end{figure}
 
 % --- Figure 2: Model schematic ---
 \begin{figure}[tbp]
   \centering
-  % \includegraphics[width=\textwidth]{figures/fig2_model.pdf}
+  % \includegraphics[width=\textwidth]{figures/fig2_model.pdf}  % TODO: no model figure yet
   \caption{\textbf{Linear prediction model for plaid responses.}
   \textbf{(A)}~Gabor spatial filter at the preferred orientation.
   \textbf{(B)}~Temporal filter modeled as a difference of Maxwell functions
@@ -392,7 +391,7 @@ occurred at approximately 350~$\mu$m depth.
 % --- Figure 3: P and C vs depth ---
 \begin{figure}[tbp]
   \centering
-  % \includegraphics[width=\textwidth]{figures/fig3_depth.pdf}
+  \includegraphics[width=\textwidth]{figures/fig3_depth.pdf}
   \caption{\textbf{Depth-dependent changes in cross-orientation metrics.}
   \textbf{(A)}~Metric $P$ (suppression/facilitation ratio) decreased with
   cortical depth ($r = -0.706$, $p = 2.72 \times 10^{-5}$, $n = 28$). Each
@@ -436,7 +435,7 @@ Table~\ref{tab:mediation}).
 % --- Figure 4: Spatial frequency ---
 \begin{figure}[tbp]
   \centering
-  % \includegraphics[width=\textwidth]{figures/fig4_sf.pdf}
+  \includegraphics[width=0.5\textwidth]{figures/fig4_sf.pdf}
   \caption{\textbf{Spatial frequency preference decreases with cortical
   depth.} Site-mean preferred spatial frequency plotted against depth. Each
   point is one field of view; error bars show SEM. Dashed line is the
@@ -456,7 +455,7 @@ imaging depth. All metrics used baseline-subtracted responses.
 % --- Figure 5: Baseline ---
 \begin{figure}[tbp]
   \centering
-  % \includegraphics[width=\textwidth]{figures/fig5_baseline.pdf}
+  % \includegraphics[width=0.5\textwidth]{figures/fig5_baseline.pdf}  % TODO: generate
   \caption{\textbf{Baseline fluorescence increases with depth.} Site-mean
   baseline fluorescence as a function of cortical depth, reflecting the
   increase in laser power at deeper imaging planes.}
@@ -478,7 +477,7 @@ Tuning bandwidth mediated approximately 21\% of the $P$--depth effect
 % --- Figure 6: Bandwidth ---
 \begin{figure}[tbp]
   \centering
-  % \includegraphics[width=\textwidth]{figures/fig6_bandwidth.pdf}
+  \includegraphics[width=\textwidth]{figures/fig6_bandwidth.pdf}
   \caption{\textbf{Orientation tuning bandwidth increases with depth.}
   \textbf{(A)}~Site-mean half-width at half-height versus depth
   ($r = +0.869$, $p = 2.0 \times 10^{-9}$).
@@ -506,7 +505,7 @@ pinwheel centers) had more linearly predictable plaid tuning shapes.
 % --- Figure 7: LHI ---
 \begin{figure}[tbp]
   \centering
-  % \includegraphics[width=\textwidth]{figures/fig7_lhi.pdf}
+  \includegraphics[width=\textwidth]{figures/fig7_lhi.pdf}
   \caption{\textbf{Local homogeneity index decreases with depth.}
   \textbf{(A)}~Site-mean LHI versus depth ($r = -0.93$). Higher LHI
   indicates more homogeneous local orientation preferences (orientation
@@ -533,7 +532,7 @@ layer~2/3.
 % --- Figure 8: OSI ---
 \begin{figure}[tbp]
   \centering
-  % \includegraphics[width=\textwidth]{figures/fig8_osi.pdf}
+  \includegraphics[width=\textwidth]{figures/fig8_osi.pdf}
   \caption{\textbf{Orientation selectivity and cross-orientation metrics.}
   \textbf{(A)}~Site-mean OSI versus depth, showing a mild decrease.
   \textbf{(B)}~Within-site Pearson $r$ between $C$ and OSI versus depth.

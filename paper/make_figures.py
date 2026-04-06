@@ -186,17 +186,18 @@ def panel_label(ax, label, x=-0.15, y=1.05):
 
 def stats_text(ax, r, p, n, loc='lower left'):
     txt = f'r = {r:+.3f}\np = {p:.2g}\nn = {n}'
+    # Place outside the data area using axes margins
     anchors = {
-        'lower left':  (0.05, 0.05, 'bottom', 'left'),
-        'lower right': (0.95, 0.05, 'bottom', 'right'),
-        'upper left':  (0.05, 0.95, 'top',    'left'),
-        'upper right': (0.95, 0.95, 'top',    'right'),
+        'lower left':  (0.03, 0.03, 'bottom', 'left'),
+        'lower right': (0.97, 0.03, 'bottom', 'right'),
+        'upper left':  (0.03, 0.97, 'top',    'left'),
+        'upper right': (0.97, 0.97, 'top',    'right'),
     }
     x, y, va, ha = anchors[loc]
     ax.text(x, y, txt, transform=ax.transAxes, fontsize=7,
-            va=va, ha=ha,
+            va=va, ha=ha, zorder=10,
             bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
-                      edgecolor='#999999', alpha=0.9, linewidth=0.5))
+                      edgecolor='#999999', alpha=1.0, linewidth=0.5))
 
 
 def add_regression(ax, x, y, color='black', alpha=0.4):
@@ -274,8 +275,8 @@ def fig1_example_tuning_curves():
         ax.set_xticks([0, 90, 180, 270])
         ax.axhline(0, color=COLORS['light'], linewidth=0.5, zorder=0)
         depth_str = 'Shallow' if row == 0 else 'Deep'
-        ax.text(0.98, 0.95, f'{depth_str} ({label_depth} \u03bcm)\nROI {roi}',
-                transform=ax.transAxes, fontsize=7, va='top', ha='right',
+        ax.text(0.98, 0.02, f'{depth_str} ({label_depth} \u03bcm), ROI {roi}',
+                transform=ax.transAxes, fontsize=6, va='bottom', ha='right',
                 color=COLORS['neutral'])
 
         # Panel B: plaid observed vs prediction
@@ -290,14 +291,14 @@ def fig1_example_tuning_curves():
         ax.set_xlim(-15, 345)
         ax.set_xticks([0, 90, 180, 270])
         ax.axhline(0, color=COLORS['light'], linewidth=0.5, zorder=0)
-        ax.legend(fontsize=6, loc='upper left', frameon=True,
+        ax.legend(fontsize=6, loc='upper right', frameon=True,
                   edgecolor='#cccccc', fancybox=False)
 
-        # Compute P for annotation
+        # Compute P for annotation — place in lower left to avoid data
         p_ratio = np.sum(p_mean) / np.sum(pred) if np.sum(pred) != 0 else 0
-        ax.text(0.98, 0.95, f'P = {p_ratio:.2f}',
+        ax.text(0.03, 0.03, f'P = {p_ratio:.2f}',
                 transform=ax.transAxes, fontsize=8, fontweight='bold',
-                va='top', ha='right',
+                va='bottom', ha='left',
                 color=COLORS['green'] if p_ratio > 1 else COLORS['secondary'])
 
     panel_label(axes[0, 0], 'A')
@@ -415,7 +416,7 @@ def fig4_sf():
     ax.set_ylabel('Spatial frequency (cyc/deg)')
 
     r, p = pearsonr(depths, means)
-    stats_text(ax, r, p, len(depths), 'upper right')
+    stats_text(ax, r, p, len(depths), 'lower left')
 
     fig.tight_layout()
     save(fig, 'fig4_sf')
@@ -524,8 +525,14 @@ def fig_covariate_with_corr(fig_num, name, cov_file, cov_col_idx,
     ax1.set_ylabel(cov_label)
 
     r1, p1 = pearsonr(cov_depths, cov_means)
-    stats_text(ax1, r1, p1, len(cov_depths),
-               'upper right' if r1 < 0 else 'upper left')
+    # Place stats opposite to the data trend to avoid overlap
+    if r1 < 0:
+        # Data goes down-right, so lower left is empty
+        stats_loc = 'lower left'
+    else:
+        # Data goes up-right, so lower right is empty
+        stats_loc = 'lower right'
+    stats_text(ax1, r1, p1, len(cov_depths), stats_loc)
 
     # Panel B: within-site correlation (covariate vs C) plotted against depth
     corr_depths, corr_rs, corr_ps = [], [], []
@@ -567,13 +574,26 @@ def fig_covariate_with_corr(fig_num, name, cov_file, cov_col_idx,
     ax2.axhline(0, color=COLORS['light'], linewidth=0.8, zorder=1)
     ax2.set_xlabel('Depth (\u03bcm)')
     ax2.set_ylabel(f'Within-site r ({metric_label} vs {cov_label.split()[0]})')
-    ax2.legend(fontsize=6, loc='best', frameon=True,
-               edgecolor='#cccccc', fancybox=False)
 
     # Count significant sites
     n_sig = int(np.sum(sig))
-    ax2.text(0.98, 0.02, f'{n_sig}/{len(corr_rs)} sig.',
-             transform=ax2.transAxes, fontsize=7, va='bottom', ha='right',
+
+    # Place legend and sig count in the emptiest quadrant
+    # Check where data is sparse to avoid overlap
+    mid_r = np.median(corr_rs) if len(corr_rs) > 0 else 0
+    if mid_r < 0:
+        # Most data below zero — put legend top-left, sig count top-right
+        legend_loc = 'upper left'
+        sig_pos = (0.97, 0.97, 'top', 'right')
+    else:
+        # Most data above zero — put legend bottom-left, sig count bottom-right
+        legend_loc = 'lower left'
+        sig_pos = (0.97, 0.03, 'bottom', 'right')
+
+    ax2.legend(fontsize=6, loc=legend_loc, frameon=True,
+               edgecolor='#cccccc', fancybox=False)
+    ax2.text(sig_pos[0], sig_pos[1], f'{n_sig}/{len(corr_rs)} sig.',
+             transform=ax2.transAxes, fontsize=7, va=sig_pos[2], ha=sig_pos[3],
              color=COLORS['neutral'])
 
     panel_label(ax1, 'A')
