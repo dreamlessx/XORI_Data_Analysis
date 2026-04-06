@@ -198,7 +198,7 @@ def plot_metric_vs_baseline_site(site, baselines, metrics, metric_key, metric_la
     
     # For M_S, show it as percentage of baseline
     if metric_key == 'M_S_norm':
-        y_label = "M_S (% of baseline)"
+        y_label = "P_diff (% baseline)"
     else:
         y_label = metric_label
     
@@ -313,22 +313,20 @@ def plot_r_vs_depth(r_values, site_depths, metric_key, metric_label, out_file):
     
     # Labels and title based on metric
     if metric_key == 'M_S':
-        ylabel = 'S vs. Baseline (r-value)'
-        title = f'Metric S (Baseline): r-value vs. Depth (N={len(depths)})'
+        ylabel = 'P_diff vs. Baseline (r-value)'
+        title = f'P_diff (Baseline): r-value vs. Depth (N={len(depths)})'
     elif metric_key == 'M_C':
         ylabel = 'C vs. Baseline (r-value)'
-        title = f'Metric C (Baseline): r-value vs. Depth (N={len(depths)})'
+        title = f'C (Baseline): r-value vs. Depth (N={len(depths)})'
     elif metric_key == 'M_S_ratio':
-        # Remove "_ratio" from title but keep in filename
-        ylabel = 'S vs. Baseline (r-value)'
-        title = f'Metric S (Baseline): r-value vs. Depth (N={len(depths)})'
+        ylabel = 'P vs. Baseline (r-value)'
+        title = f'P (Baseline): r-value vs. Depth (N={len(depths)})'
     elif metric_key == 'M_S_log':
-        # Rename from S_log to just S
-        ylabel = 'S vs. Baseline (r-value)'
-        title = f'Metric S (Baseline): r-value vs. Depth (N={len(depths)})'
+        ylabel = 'log\u2082(P) vs. Baseline (r-value)'
+        title = f'log\u2082(P) (Baseline): r-value vs. Depth (N={len(depths)})'
     elif metric_key == 'M_X':
         ylabel = 'X vs. Baseline (r-value)'
-        title = f'Metric X (Baseline): r-value vs. Depth (N={len(depths)})'
+        title = f'X (Baseline): r-value vs. Depth (N={len(depths)})'
     else:
         ylabel = f'{metric_label} vs. Baseline (r-value)'
         title = f'{metric_label} (Baseline): r-value vs. Depth (N={len(depths)})'
@@ -522,37 +520,37 @@ def process_baseline_analysis():
         
         # M_S (raw)
         plot_metric_vs_baseline_site(
-            site_name, baselines, metrics, 'M_S', 'M_S',
+            site_name, baselines, metrics, 'M_S', 'P_diff',
             metric_site_dir / 'm_s' / f'{site_name}_m_s_vs_baseline.png'
         )
-        
+
         # M_S_norm (percentage of baseline)
         plot_metric_vs_baseline_site(
-            site_name, baselines, metrics, 'M_S_norm', 'M_S_norm',
+            site_name, baselines, metrics, 'M_S_norm', 'P_diff (% baseline)',
             metric_site_dir / 'm_s_norm' / f'{site_name}_m_s_norm_vs_baseline.png'
         )
-        
+
         # M_S_ratio
         plot_metric_vs_baseline_site(
-            site_name, baselines, metrics, 'M_S_ratio', 'M_S_ratio',
+            site_name, baselines, metrics, 'M_S_ratio', 'P',
             metric_site_dir / 'm_s_r' / f'{site_name}_m_s_ratio_vs_baseline.png'
         )
-        
+
         # M_S_log (log2 of positive M_S_ratio values)
         plot_metric_vs_baseline_site(
-            site_name, baselines, metrics, 'M_S_log', 'M_S_log',
+            site_name, baselines, metrics, 'M_S_log', 'log\u2082(P)',
             metric_site_dir / 'm_s_l' / f'{site_name}_m_s_log_vs_baseline.png'
         )
-        
+
         # M_C
         plot_metric_vs_baseline_site(
-            site_name, baselines, metrics, 'M_C', 'M_C',
+            site_name, baselines, metrics, 'M_C', 'C',
             metric_site_dir / 'm_c' / f'{site_name}_m_c_vs_baseline.png'
         )
-        
+
         # M_X (peak suppression)
         plot_metric_vs_baseline_site(
-            site_name, baselines, metrics, 'M_X', 'M_X',
+            site_name, baselines, metrics, 'M_X', 'X',
             metric_site_dir / 'm_x' / f'{site_name}_m_x_vs_baseline.png'
         )
     
@@ -560,17 +558,17 @@ def process_baseline_analysis():
     print(f"\n[INFO] Calculating R-values and plotting vs depth...")
     r_values = calculate_r_values_per_site(site_baselines, METRIC_DATA_ALL)
     
-    plot_r_vs_depth(r_values['M_S'], site_depths, 'M_S', 'M_S',
+    plot_r_vs_depth(r_values['M_S'], site_depths, 'M_S', 'P_diff',
                    pearson_site_dir / 'm_s.png')
-    plot_r_vs_depth(r_values['M_S_norm'], site_depths, 'M_S_norm', 'M_S_norm',
+    plot_r_vs_depth(r_values['M_S_norm'], site_depths, 'M_S_norm', 'P_diff (% baseline)',
                    pearson_site_dir / 'm_s_norm.png')
-    plot_r_vs_depth(r_values['M_S_ratio'], site_depths, 'M_S_ratio', 'M_S_ratio',
+    plot_r_vs_depth(r_values['M_S_ratio'], site_depths, 'M_S_ratio', 'P',
                    pearson_site_dir / 'm_s_r.png')
-    plot_r_vs_depth(r_values['M_S_log'], site_depths, 'M_S_log', 'M_S_log',
+    plot_r_vs_depth(r_values['M_S_log'], site_depths, 'M_S_log', 'log\u2082(P)',
                    pearson_site_dir / 'm_s_l.png')
-    plot_r_vs_depth(r_values['M_C'], site_depths, 'M_C', 'M_C',
+    plot_r_vs_depth(r_values['M_C'], site_depths, 'M_C', 'C',
                    pearson_site_dir / 'm_c.png')
-    plot_r_vs_depth(r_values['M_X'], site_depths, 'M_X', 'M_X',
+    plot_r_vs_depth(r_values['M_X'], site_depths, 'M_X', 'X',
                    pearson_site_dir / 'm_x.png')
     
     # Plot baseline vs depth

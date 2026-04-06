@@ -36,11 +36,11 @@ OUTPUT_BASE = Path("depth_data")
 
 # Metric column indices and names
 METRICS = {
-    'm_s': {'col': 1, 'label': r'Metric $\mathregular{S_{\Delta}}$ (a.u.)', 'short': 'M_S'},
-    'm_c': {'col': 2, 'label': 'Metric C (r-value)', 'short': 'M_C'},
-    'm_s_norm': {'col': 5, 'label': r'Metric $\mathregular{S_{\Delta}}$ (% baseline)', 'short': 'M_S_norm'},
-    'm_s_r': {'col': 6, 'label': 'Metric S (ratio)', 'short': 'M_S_ratio'},
-    'm_x': {'col': 7, 'label': 'Metric X (peak suppression)', 'short': 'M_X'}
+    'm_s': {'col': 1, 'label': r'$P_{\mathrm{diff}}$ (a.u.)', 'short': 'P_diff'},
+    'm_c': {'col': 2, 'label': 'C (r-value)', 'short': 'C'},
+    'm_s_norm': {'col': 5, 'label': r'$P_{\mathrm{diff}}$ (% baseline)', 'short': 'P_diff_norm'},
+    'm_s_r': {'col': 6, 'label': 'P (ratio)', 'short': 'P'},
+    'm_x': {'col': 7, 'label': 'X (peak suppression)', 'short': 'X'}
 }
 
 # ========= Helper Functions =========

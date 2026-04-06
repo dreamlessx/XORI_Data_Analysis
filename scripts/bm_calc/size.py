@@ -445,7 +445,7 @@ def plot_metric_vs_size_site(site_name, size_values, metrics, metric_key,
     # Labels
     x_label = "ROI Size (pixels)"
     if metric_key == 'M_S_norm':
-        y_label = "M_S (% of baseline)"
+        y_label = "P_diff (% baseline)"
     else:
         y_label = metric_label
     
@@ -568,24 +568,22 @@ def plot_r_vs_depth(r_values, site_depths, metric_key, metric_label, out_file):
     
     # Labels and title based on metric
     if metric_key == 'M_S':
-        title = f'Metric S (Size): r-value vs. Depth (N={len(depths)})'
+        title = f'P_diff (Size): r-value vs. Depth (N={len(depths)})'
         legend_loc = 'upper right'
     elif metric_key == 'M_C':
-        title = f'Metric C (Size): r-value vs. Depth (N={len(depths)})'
+        title = f'C (Size): r-value vs. Depth (N={len(depths)})'
         legend_loc = 'upper right'
     elif metric_key == 'M_X':
-        title = f'Metric X (Size): r-value vs. Depth (N={len(depths)})'
+        title = f'X (Size): r-value vs. Depth (N={len(depths)})'
         legend_loc = 'upper right'
     elif metric_key == 'M_S_norm':
-        title = f'Metric S_norm (Size): r-value vs. Depth (N={len(depths)})'
+        title = f'P_diff (% baseline) (Size): r-value vs. Depth (N={len(depths)})'
         legend_loc = 'upper right'
     elif metric_key == 'M_S_ratio':
-        # Remove "_ratio" from title but keep in filename
-        title = f'Metric S (Size): r-value vs. Depth (N={len(depths)})'
+        title = f'P (Size): r-value vs. Depth (N={len(depths)})'
         legend_loc = 'upper right'
     elif metric_key == 'M_S_log':
-        # Rename from S_log to just S
-        title = f'Metric S (Size): r-value vs. Depth (N={len(depths)})'
+        title = f'log\u2082(P) (Size): r-value vs. Depth (N={len(depths)})'
         legend_loc = 'upper right'
     else:
         title = f'{metric_label} vs. Size: r-value vs. Depth (N={len(depths)})'
@@ -771,37 +769,37 @@ def process_size_analysis(size_data, bandwidth_data, sf_data, baseline_data):
         
         # M_S (raw)
         plot_metric_vs_size_site(
-            site_name, size_values, metrics, 'M_S', 'M_S',
+            site_name, size_values, metrics, 'M_S', 'P_diff',
             metric_site_dir / 'm_s' / f'{site_name}_m_s_vs_size.png'
         )
-        
+
         # M_S_norm (percentage of baseline)
         plot_metric_vs_size_site(
-            site_name, size_values, metrics, 'M_S_norm', 'M_S_norm',
+            site_name, size_values, metrics, 'M_S_norm', 'P_diff (% baseline)',
             metric_site_dir / 'm_s_norm' / f'{site_name}_m_s_norm_vs_size.png'
         )
-        
+
         # M_S_ratio
         plot_metric_vs_size_site(
-            site_name, size_values, metrics, 'M_S_ratio', 'M_S_ratio',
+            site_name, size_values, metrics, 'M_S_ratio', 'P',
             metric_site_dir / 'm_s_r' / f'{site_name}_m_s_ratio_vs_size.png'
         )
-        
+
         # M_S_log (log2 of positive M_S_ratio values)
         plot_metric_vs_size_site(
-            site_name, size_values, metrics, 'M_S_log', 'M_S_log',
+            site_name, size_values, metrics, 'M_S_log', 'log\u2082(P)',
             metric_site_dir / 'm_s_l' / f'{site_name}_m_s_log_vs_size.png'
         )
-        
+
         # M_C
         plot_metric_vs_size_site(
-            site_name, size_values, metrics, 'M_C', 'M_C',
+            site_name, size_values, metrics, 'M_C', 'C',
             metric_site_dir / 'm_c' / f'{site_name}_m_c_vs_size.png'
         )
-        
+
         # M_X (peak suppression)
         plot_metric_vs_size_site(
-            site_name, size_values, metrics, 'M_X', 'M_X',
+            site_name, size_values, metrics, 'M_X', 'X',
             metric_site_dir / 'm_x' / f'{site_name}_m_x_vs_size.png'
         )
     
@@ -809,17 +807,17 @@ def process_size_analysis(size_data, bandwidth_data, sf_data, baseline_data):
     print(f"\n[INFO] Calculating R-values and plotting vs depth (metrics)...")
     r_values = calculate_r_values_per_site(size_data, METRIC_DATA_NULL)
     
-    plot_r_vs_depth(r_values['M_S'], site_depths, 'M_S', 'M_S',
+    plot_r_vs_depth(r_values['M_S'], site_depths, 'M_S', 'P_diff',
                     pearson_site_dir / 'm_s.png')
-    plot_r_vs_depth(r_values['M_S_norm'], site_depths, 'M_S_norm', 'M_S_norm',
+    plot_r_vs_depth(r_values['M_S_norm'], site_depths, 'M_S_norm', 'P_diff (% baseline)',
                     pearson_site_dir / 'm_s_norm.png')
-    plot_r_vs_depth(r_values['M_S_ratio'], site_depths, 'M_S_ratio', 'M_S_ratio',
+    plot_r_vs_depth(r_values['M_S_ratio'], site_depths, 'M_S_ratio', 'P',
                     pearson_site_dir / 'm_s_r.png')
-    plot_r_vs_depth(r_values['M_S_log'], site_depths, 'M_S_log', 'M_S_log',
+    plot_r_vs_depth(r_values['M_S_log'], site_depths, 'M_S_log', 'log\u2082(P)',
                     pearson_site_dir / 'm_s_l.png')
-    plot_r_vs_depth(r_values['M_C'], site_depths, 'M_C', 'M_C',
+    plot_r_vs_depth(r_values['M_C'], site_depths, 'M_C', 'C',
                     pearson_site_dir / 'm_c.png')
-    plot_r_vs_depth(r_values['M_X'], site_depths, 'M_X', 'M_X',
+    plot_r_vs_depth(r_values['M_X'], site_depths, 'M_X', 'X',
                     pearson_site_dir / 'm_x.png')
     
     # Calculate correlations between size and other properties

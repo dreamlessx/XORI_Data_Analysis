@@ -192,10 +192,10 @@ def plot_metric_vs_osi_site(site_name, osi_values, metrics, metric_key,
     osi_label = "Circular Variance" if osi_type == 'cv' else "OSI(ratio)"
     
     if metric_key == 'M_S_norm':
-        y_label = "M_S (% of baseline)"
+        y_label = "P_diff (% baseline)"
     else:
         y_label = metric_label
-    
+
     ax.set_title(f"{site_name}: {osi_label} vs {y_label}", fontsize=14)
     ax.set_xlabel(osi_label, fontsize=12)
     ax.set_ylabel(y_label, fontsize=12)
@@ -356,24 +356,22 @@ def plot_r_vs_depth(r_values, site_depths, metric_key, metric_label, out_file, o
     osi_label = "Circular Variance" if osi_type == 'cv' else "OSI(ratio)"
     
     if metric_key == 'M_S':
-        title = f'Metric S ({osi_label}): r-value vs. Depth (N={len(depths)})'
+        title = f'P_diff ({osi_label}): r-value vs. Depth (N={len(depths)})'
         legend_loc = 'upper left'
     elif metric_key == 'M_C':
-        title = f'Metric C ({osi_label}): r-value vs. Depth (N={len(depths)})'
+        title = f'C ({osi_label}): r-value vs. Depth (N={len(depths)})'
         legend_loc = 'upper left'
     elif metric_key == 'M_X':
-        title = f'Metric X ({osi_label}): r-value vs. Depth (N={len(depths)})'
+        title = f'X ({osi_label}): r-value vs. Depth (N={len(depths)})'
         legend_loc = 'upper left'
     elif metric_key == 'M_S_norm':
-        title = f'Metric S_norm ({osi_label}): r-value vs. Depth (N={len(depths)})'
+        title = f'P_diff (% baseline) ({osi_label}): r-value vs. Depth (N={len(depths)})'
         legend_loc = 'best'
     elif metric_key == 'M_S_ratio':
-        # Remove "_ratio" from title but keep in filename
-        title = f'Metric S ({osi_label}): r-value vs. Depth (N={len(depths)})'
+        title = f'P ({osi_label}): r-value vs. Depth (N={len(depths)})'
         legend_loc = 'upper left'
     elif metric_key == 'M_S_log':
-        # Rename from S_log to just S
-        title = f'Metric S ({osi_label}): r-value vs. Depth (N={len(depths)})'
+        title = f'log\u2082(P) ({osi_label}): r-value vs. Depth (N={len(depths)})'
         legend_loc = 'upper left'
     else:
         title = f'{metric_label} vs. {osi_label}: r-value vs. Depth (N={len(depths)})'
@@ -582,42 +580,42 @@ def process_osi_analysis(osi_data, output_dir, osi_type='gaku'):
         
         # M_S (raw)
         plot_metric_vs_osi_site(
-            site_name, osi_values, metrics, 'M_S', 'M_S',
+            site_name, osi_values, metrics, 'M_S', 'P_diff',
             metric_site_dir / 'm_s' / f'{site_name}_m_s_vs_osi.png',
             osi_type=osi_type
         )
-        
+
         # M_S_norm (percentage of baseline)
         plot_metric_vs_osi_site(
-            site_name, osi_values, metrics, 'M_S_norm', 'M_S_norm',
+            site_name, osi_values, metrics, 'M_S_norm', 'P_diff (% baseline)',
             metric_site_dir / 'm_s_norm' / f'{site_name}_m_s_norm_vs_osi.png',
             osi_type=osi_type
         )
-        
+
         # M_S_ratio
         plot_metric_vs_osi_site(
-            site_name, osi_values, metrics, 'M_S_ratio', 'M_S_ratio',
+            site_name, osi_values, metrics, 'M_S_ratio', 'P',
             metric_site_dir / 'm_s_r' / f'{site_name}_m_s_ratio_vs_osi.png',
             osi_type=osi_type
         )
-        
+
         # M_S_log (log2 of positive M_S_ratio values)
         plot_metric_vs_osi_site(
-            site_name, osi_values, metrics, 'M_S_log', 'M_S_log',
+            site_name, osi_values, metrics, 'M_S_log', 'log\u2082(P)',
             metric_site_dir / 'm_s_l' / f'{site_name}_m_s_log_vs_osi.png',
             osi_type=osi_type
         )
-        
+
         # M_C
         plot_metric_vs_osi_site(
-            site_name, osi_values, metrics, 'M_C', 'M_C',
+            site_name, osi_values, metrics, 'M_C', 'C',
             metric_site_dir / 'm_c' / f'{site_name}_m_c_vs_osi.png',
             osi_type=osi_type
         )
-        
+
         # M_X (peak suppression)
         plot_metric_vs_osi_site(
-            site_name, osi_values, metrics, 'M_X', 'M_X',
+            site_name, osi_values, metrics, 'M_X', 'X',
             metric_site_dir / 'm_x' / f'{site_name}_m_x_vs_osi.png',
             osi_type=osi_type
         )
@@ -626,17 +624,17 @@ def process_osi_analysis(osi_data, output_dir, osi_type='gaku'):
     print(f"\n[INFO] Calculating R-values and plotting vs depth...")
     r_values = calculate_r_values_per_site(osi_data, METRIC_DATA_ALL)
     
-    plot_r_vs_depth(r_values['M_S'], site_depths, 'M_S', 'M_S',
+    plot_r_vs_depth(r_values['M_S'], site_depths, 'M_S', 'P_diff',
                    pearson_site_dir / 'm_s.png', osi_type=osi_type)
-    plot_r_vs_depth(r_values['M_S_norm'], site_depths, 'M_S_norm', 'M_S_norm',
+    plot_r_vs_depth(r_values['M_S_norm'], site_depths, 'M_S_norm', 'P_diff (% baseline)',
                    pearson_site_dir / 'm_s_norm.png', osi_type=osi_type)
-    plot_r_vs_depth(r_values['M_S_ratio'], site_depths, 'M_S_ratio', 'M_S_ratio',
+    plot_r_vs_depth(r_values['M_S_ratio'], site_depths, 'M_S_ratio', 'P',
                    pearson_site_dir / 'm_s_r.png', osi_type=osi_type)
-    plot_r_vs_depth(r_values['M_S_log'], site_depths, 'M_S_log', 'M_S_log',
+    plot_r_vs_depth(r_values['M_S_log'], site_depths, 'M_S_log', 'log\u2082(P)',
                    pearson_site_dir / 'm_s_l.png', osi_type=osi_type)
-    plot_r_vs_depth(r_values['M_C'], site_depths, 'M_C', 'M_C',
+    plot_r_vs_depth(r_values['M_C'], site_depths, 'M_C', 'C',
                    pearson_site_dir / 'm_c.png', osi_type=osi_type)
-    plot_r_vs_depth(r_values['M_X'], site_depths, 'M_X', 'M_X',
+    plot_r_vs_depth(r_values['M_X'], site_depths, 'M_X', 'X',
                    pearson_site_dir / 'm_x.png', osi_type=osi_type)
     
     # Plot OSI vs depth

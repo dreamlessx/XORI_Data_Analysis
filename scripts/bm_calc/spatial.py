@@ -350,30 +350,18 @@ def plot_r_vs_depth(r_values, site_depths, metric_key, metric_label, out_file, u
     # Add horizontal line at r=0
     ax.axhline(y=0, color='black', linestyle='--', linewidth=2, label='r = 0')
     
-    # Labels and title based on metric - remove log₁₀ prefix, just use SF for both
-    if metric_key == 'M_S':
-        title = f'Metric S (SF): r-value vs. Depth (N={len(depths)})'
-        legend_loc = 'upper left'
-    elif metric_key == 'M_C':
-        title = f'Metric C (SF): r-value vs. Depth (N={len(depths)})'
-        legend_loc = 'upper left'
-    elif metric_key == 'M_X':
-        title = f'Metric X (SF): r-value vs. Depth (N={len(depths)})'
-        legend_loc = 'upper left'
-    elif metric_key == 'M_S_norm':
-        title = f'Metric S_norm (SF): r-value vs. Depth (N={len(depths)})'
-        legend_loc = 'best'
-    elif metric_key == 'M_S_ratio':
-        # Remove "_ratio" from title but keep in filename
-        title = f'Metric S (SF): r-value vs. Depth (N={len(depths)})'
-        legend_loc = 'upper left'
-    elif metric_key == 'M_S_log':
-        # Rename from S_log to just S
-        title = f'Metric S (SF): r-value vs. Depth (N={len(depths)})'
-        legend_loc = 'upper left'
-    else:
-        title = f'{metric_label} vs. SF: r-value vs. Depth (N={len(depths)})'
-        legend_loc = 'upper left'
+    # Labels and title based on metric
+    metric_display = {
+        'M_S': 'P_diff',
+        'M_C': 'C',
+        'M_X': 'X',
+        'M_S_norm': 'P_diff_norm',
+        'M_S_ratio': 'P',
+        'M_S_log': 'P',
+    }
+    display_name = metric_display.get(metric_key, metric_key)
+    title = f'{display_name} (SF): r-value vs. Depth (N={len(depths)})'
+    legend_loc = 'upper left'
     
     # Font sizes: axis labels 20pt bold, title 22pt bold, extra spacing with labelpad
     ax.set_xlabel('Depth (μm)', fontsize=20, fontweight='bold', labelpad=15)

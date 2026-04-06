@@ -207,7 +207,7 @@ onset. The baseline fluorescence was computed from the window 250--550~ms
 before stimulus onset (during the preceding inter-stimulus interval). All
 analyses were performed on baseline-subtracted responses ($\Delta F$).
 
-\subsubsection{Metric P: suppression/facilitation strength}
+\subsubsection{Metric P: suppression/facilitation ratio}
 
 For each ROI, a linear prediction of the plaid response was constructed as
 follows. The baseline-subtracted grating tuning curve $G(\theta)$ was shifted
@@ -219,19 +219,19 @@ tuning curve:
   \label{eq:prediction}
 \end{equation}
 where $B$ is the baseline fluorescence. The primary metric $P$ quantifies the
-mean signed deviation of the observed plaid response from this linear
-prediction across all directions:
+ratio of the observed plaid response to this linear prediction, summed across
+all directions:
 \begin{equation}
-  P = \frac{1}{N}\sum_{i}
-    \bigl(R_i^{\text{plaid}} - \text{Pred}_i\bigr),
+  P = \frac{\sum_{i} R_i^{\text{plaid}}}{\sum_{i} \text{Pred}_i},
   \label{eq:P}
 \end{equation}
 where $R_i^{\text{plaid}}$ is the baseline-subtracted plaid response at
-direction $i$ and $N$ is the number of directions tested. Positive values of
-$P$ indicate facilitation (the observed plaid response exceeds the linear
-prediction on average), negative values indicate suppression (the observed
-response falls below the prediction), and $P = 0$ indicates perfect
-linearity.
+direction $i$. Values of $P > 1$ indicate facilitation (the observed plaid
+response exceeds the linear prediction), $P < 1$ indicates suppression
+(the observed response falls below the prediction), and $P = 1$ indicates
+perfect linearity. For statistical analysis and visualization, $P$ was
+$\log_2$-transformed so that values above zero indicate facilitation, values
+below zero indicate suppression, and the neutral point maps to zero.
 
 \subsubsection{Metric C: shape similarity}
 
@@ -243,7 +243,7 @@ tuning curves:
 \end{equation}
 Higher values of $C$ indicate that the shape of the plaid tuning curve is
 more linearly predictable from the component grating responses, independent of
-the overall amplitude deviation captured by $P$.
+the overall amplitude ratio captured by $P$.
 
 \subsubsection{Signal-to-noise ratio}
 
@@ -358,7 +358,7 @@ to a linear prediction derived from the grating tuning curve.
   $-90^{\circ}$ and summing.
   \textbf{(C)}~Observed plaid tuning curve (red) compared to the linear
   prediction (dashed). In this example neuron, the observed plaid response
-  falls below the prediction ($P < 0$), indicating cross-orientation
+  falls below the prediction ($P < 1$), indicating cross-orientation
   suppression.}
   \label{fig:stimuli}
 \end{figure}
@@ -375,38 +375,38 @@ to a linear prediction derived from the grating tuning curve.
   \textbf{(C)}~The linear prediction is the sum of the responses to each
   component grating of the plaid, computed by shifting and summing the
   grating tuning curve. Deviations from this prediction are quantified by
-  metrics $P$ (signed deviation) and $C$ (shape correlation).}
+  metrics $P$ (ratio) and $C$ (shape correlation).}
   \label{fig:model}
 \end{figure}
 
 \subsection{Cross-orientation suppression increases with cortical depth}
 
-The primary metric $P$ showed a strong negative correlation with cortical
-depth at the site level ($r = -0.768$, 95\% CI: $[-0.908, -0.617]$,
-$p = 1.83 \times 10^{-6}$, $n = 28$; Figure~\ref{fig:depth}A). Superficial
-sites (140--266~$\mu$m) exhibited positive mean $P$, indicating that the
-observed plaid response exceeded the linear prediction (facilitation).
-Deeper sites (392--518~$\mu$m) exhibited negative mean $P$, indicating that
-the observed response fell below the prediction (suppression). The transition
-from facilitation to suppression occurred at approximately 350~$\mu$m depth.
+The $\log_2$-transformed metric $P$ showed a strong negative correlation
+with cortical depth at the site level ($r = -0.706$,
+$p = 2.72 \times 10^{-5}$, $n = 28$; Figure~\ref{fig:depth}A). Superficial
+sites (140--266~$\mu$m) exhibited $\log_2(P) > 0$ (i.e., $P > 1$),
+indicating facilitation---the observed plaid response exceeded the linear
+prediction. Deeper sites (392--518~$\mu$m) exhibited $\log_2(P) < 0$
+(i.e., $P < 1$), indicating suppression. The transition from facilitation to
+suppression occurred at approximately 350~$\mu$m depth.
 
 % --- Figure 3: P and C vs depth ---
 \begin{figure}[tbp]
   \centering
   % \includegraphics[width=\textwidth]{figures/fig3_depth.pdf}
   \caption{\textbf{Depth-dependent changes in cross-orientation metrics.}
-  \textbf{(A)}~Metric $P$ (mean signed deviation from linear prediction)
-  decreased with cortical depth ($r = -0.768$,
-  $p = 1.83 \times 10^{-6}$, $n = 28$). Each point represents the site mean
-  across all ROIs at one imaging depth; error bars indicate SEM. Dashed line
-  shows linear regression. $P > 0$: facilitation; $P < 0$: suppression.
+  \textbf{(A)}~$\log_2(P)$ (suppression/facilitation ratio) decreased with
+  cortical depth ($r = -0.706$, $p = 2.72 \times 10^{-5}$, $n = 28$). Each
+  point represents the site-mean $\log_2(P)$ across all ROIs at one imaging
+  depth. Dashed line shows linear regression. $\log_2(P) > 0$ ($P > 1$):
+  facilitation; $\log_2(P) < 0$ ($P < 1$): suppression.
   \textbf{(B)}~Metric $C$ (shape similarity) increased with depth
   ($r = +0.798$, $p = 3.67 \times 10^{-7}$). Higher $C$ indicates the plaid
   tuning curve shape is more linearly predictable from grating responses.
   \textbf{(C)}~Scatter plot of $P$ versus $C$ across sites, colored by
-  cortical depth, showing their anticorrelation ($r = -0.647$, $p < 0.001$).
+  cortical depth, showing their anticorrelation.
   \textbf{(D)}~Depth-binned summary. Superficial layer~2/3 shows facilitation
-  ($P > 0$); deep layer~2/3 shows suppression ($P < 0$).}
+  ($P > 1$); deep layer~2/3 shows suppression ($P < 1$).}
   \label{fig:depth}
 \end{figure}
 
@@ -430,8 +430,8 @@ sites, spatial frequency showed weak correlations with $P$ (significant at
 strongly predict $P$ within a single imaging plane. However, across the
 full depth range, mediation analysis revealed that spatial frequency
 preference accounted for approximately 40\% of the $P$--depth correlation:
-the partial correlation between $P$ and depth controlling for spatial
-frequency was $r = -0.463$ (compared to $r = -0.768$ at zero order;
+the partial correlation between $\log_2(P)$ and depth controlling for spatial
+frequency was $r = -0.424$ (compared to $r = -0.706$ at zero order;
 Table~\ref{tab:mediation}).
 
 % --- Figure 4: Spatial frequency ---
@@ -558,7 +558,7 @@ additional controls for ROI radius and SNR
 
 Subpopulation analyses confirmed that the $P$--depth effect was robust across
 neurons with high versus low OSI and high versus low spatial frequency
-preference (all $|r| > 0.75$, all $p < 4 \times 10^{-6}$).
+preference.
 
 The $C$--depth relationship was highly significant in the simple mixed-effects
 model ($\beta_{\text{depth}} = +0.086$, $p = 1.7 \times 10^{-11}$), but lost
@@ -574,12 +574,12 @@ indicating partial confounding by morphological factors.
     \toprule
     Control variable & Partial $r$ & \% Reduction \\
     \midrule
-    None (zero-order)         & $-0.768$ & ---  \\
-    + Spatial frequency       & $-0.463$ & 40\% \\
-    + Half-width              & $-0.605$ & 21\% \\
-    + LHI                     & $-0.697$ &  9\% \\
-    + SNR                     & $-0.727$ &  5\% \\
-    + OSI                     & $-0.740$ &  4\% \\
+    None (zero-order)         & $-0.706$ & ---  \\
+    + Spatial frequency       & $-0.424$ & 40\% \\
+    + Half-width              & $-0.558$ & 21\% \\
+    + LHI                     & $-0.642$ &  9\% \\
+    + SNR                     & $-0.671$ &  5\% \\
+    + OSI                     & $-0.678$ &  4\% \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -648,7 +648,7 @@ selectivity, lower local homogeneity, and cross-orientation suppression.
     Preferred spatial frequency     & Lower      \\
     Orientation selectivity (OSI)   & Lower      \\
     Local homogeneity (LHI)         & Lower      \\
-    Cross-orientation suppression ($P$) & Stronger (more negative) \\
+    Cross-orientation metric ($P$) & More suppressive ($P < 1$) \\
     \bottomrule
   \end{tabular}
 \end{table}
