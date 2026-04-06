@@ -132,86 +132,107 @@ def site_num_to_name(site_num):
     return f"site{int(site_num):03d}"
 
 # ========= Plot metric vs SF for one site =========
-def plot_metric_vs_sf_site(site_name, sf_values, metrics, metric_key, 
+def plot_metric_vs_sf_site(site_name, sf_values, metrics, metric_key,
                            metric_label, out_file, use_log=False):
     """
     Create scatter plot of metric vs spatial frequency for one site.
     sf_values: dict of {roi: sf_value}
     metrics: dict of {roi: {metric_key: value}}
-    use_log: if True, apply log10 to x values (SF) only, not metrics
+    use_log: if True, use log-scaled x-axis with linear SF tick labels
     """
+    from matplotlib.ticker import FixedLocator, FuncFormatter
+
     # Match SF to metrics by ROI
-    x_vals = []
+    raw_sf = []
     y_vals = []
-    
+
     for roi_idx in sorted(metrics.keys()):
         if roi_idx in sf_values:
             x_val = sf_values[roi_idx]
             y_val = metrics[roi_idx][metric_key]
-            
-            # Skip if M_S_log is None (negative M_S_ratio)
+
             if metric_key == 'M_S_log' and y_val is None:
                 continue
-            
-            # Apply log10 to SF only if requested, skip non-positive SF values
-            if use_log:
-                if x_val > 0:
-                    x_vals.append(np.log10(x_val))
-                    y_vals.append(y_val)
-            else:
-                x_vals.append(x_val)
+
+            if x_val > 0:
+                raw_sf.append(x_val)
                 y_vals.append(y_val)
-    
-    if len(x_vals) < 2:
+
+    if len(raw_sf) < 2:
         print(f"[SKIP] {site_name}: not enough data points for {metric_key}")
         return
-    
-    x_vals = np.array(x_vals)
+
+    raw_sf = np.array(raw_sf)
     y_vals = np.array(y_vals)
-    
+
+    # Stats computed on log10(SF) regardless of display
+    log_sf = np.log10(raw_sf)
+    r_val, p_val = pearsonr(log_sf, y_vals)
+    slope, intercept, *_ = linregress(log_sf, y_vals)
+    n = len(raw_sf)
+
     # Create plot
     fig, ax = plt.subplots(figsize=(10, 8))
-    ax.scatter(x_vals, y_vals, s=32, alpha=0.7)
-    
-    # Fit line
-    slope, intercept, *_ = linregress(x_vals, y_vals)
-    xx = np.linspace(np.min(x_vals), np.max(x_vals), 200)
-    yy = intercept + slope * xx
-    ax.plot(xx, yy, '--', color='black', linewidth=2)
-    
-    # Stats
-    r_val, p_val = pearsonr(x_vals, y_vals)
-    n = len(x_vals)
+
+    if use_log:
+        # Plot raw SF values on a log-scaled axis
+        ax.scatter(raw_sf, y_vals, s=32, alpha=0.7)
+        ax.set_xscale('log')
+
+        # Regression line in log space, displayed in data coords
+        xx_log = np.linspace(log_sf.min(), log_sf.max(), 200)
+        yy = intercept + slope * xx_log
+        ax.plot(10**xx_log, yy, '--', color='black', linewidth=2)
+
+        # Tick labels as actual SF values
+        sf_unique = np.unique(raw_sf)
+        tick_candidates = [0.5, 0.64, 1, 1.5, 2, 3, 4, 5, 6, 7, 8]
+        sf_min, sf_max = raw_sf.min() * 0.85, raw_sf.max() * 1.15
+        ticks = [t for t in tick_candidates if sf_min <= t <= sf_max]
+        if ticks:
+            ax.xaxis.set_major_locator(FixedLocator(ticks))
+            ax.xaxis.set_major_formatter(FuncFormatter(
+                lambda x, _: f'{x:g}'))
+
+        x_label = "Spatial Frequency [cyc/deg]"
+        title = f"{site_name}: Spatial Frequency vs {metric_label}"
+    else:
+        ax.scatter(raw_sf, y_vals, s=32, alpha=0.7)
+
+        # Regression line on raw SF
+        slope_raw, intercept_raw, *_ = linregress(raw_sf, y_vals)
+        xx = np.linspace(raw_sf.min(), raw_sf.max(), 200)
+        yy = intercept_raw + slope_raw * xx
+        ax.plot(xx, yy, '--', color='black', linewidth=2)
+
+        x_label = "Spatial Frequency (cyc/deg)"
+        title = f"{site_name}: Spatial Frequency vs {metric_label}"
+
+    # Stats annotation (always based on log10 correlation)
     txt = f"y = {slope:+.2f}x {intercept:+.2f}\nPearson r = {r_val:+.2f}, p = {p_val:.2g}, n = {n}"
     ax.text(0.05, 0.95, txt, transform=ax.transAxes, va='top',
             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.7), fontsize=12)
-    
-    # Labels
+
     if metric_key == 'M_S_norm':
         y_label = "M_S (% of baseline)"
     else:
         y_label = metric_label
-    
-    if use_log:
-        x_label = "log₁₀(Spatial Frequency) [cyc/deg]"
-        title = f"{site_name}: log₁₀(Spatial Frequency) vs {y_label}"
-    else:
-        x_label = "Spatial Frequency (cyc/deg)"
-        title = f"{site_name}: Spatial Frequency vs {y_label}"
-    
+
     ax.set_title(title, fontsize=14)
     ax.set_xlabel(x_label, fontsize=12)
     ax.set_ylabel(y_label, fontsize=12)
     ax.grid(True, alpha=0.3)
-    
-    # Add padding to axes
-    x_range = np.max(x_vals) - np.min(x_vals)
-    y_range = np.max(y_vals) - np.min(y_vals)
-    x_padding = x_range * 0.05
+
+    # Y-axis padding
+    y_range = y_vals.max() - y_vals.min()
     y_padding = y_range * 0.1
-    ax.set_xlim(np.min(x_vals) - x_padding, np.max(x_vals) + x_padding)
-    ax.set_ylim(np.min(y_vals) - y_padding, np.max(y_vals) + y_padding)
-    
+    ax.set_ylim(y_vals.min() - y_padding, y_vals.max() + y_padding)
+
+    if not use_log:
+        x_range = raw_sf.max() - raw_sf.min()
+        x_padding = x_range * 0.05
+        ax.set_xlim(raw_sf.min() - x_padding, raw_sf.max() + x_padding)
+
     plt.tight_layout()
     out_file.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(out_file, dpi=150)
