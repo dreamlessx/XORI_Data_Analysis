@@ -207,7 +207,7 @@ onset. The baseline fluorescence was computed from the window 250--550~ms
 before stimulus onset (during the preceding inter-stimulus interval). All
 analyses were performed on baseline-subtracted responses ($\Delta F$).
 
-\subsubsection{Metric P: suppression/facilitation ratio}
+\subsubsection{Metric P: suppression/facilitation strength}
 
 For each ROI, a linear prediction of the plaid response was constructed as
 follows. The baseline-subtracted grating tuning curve $G(\theta)$ was shifted
@@ -219,18 +219,19 @@ tuning curve:
   \label{eq:prediction}
 \end{equation}
 where $B$ is the baseline fluorescence. The primary metric $P$ quantifies the
-ratio of the observed plaid response to this linear prediction, summed across
-all directions:
+mean signed deviation of the observed plaid response from this linear
+prediction across all directions:
 \begin{equation}
-  P = \frac{\sum_{i} R_i^{\text{plaid}}}{\sum_{i} \text{Pred}_i},
+  P = \frac{1}{N}\sum_{i}
+    \bigl(R_i^{\text{plaid}} - \text{Pred}_i\bigr),
   \label{eq:P}
 \end{equation}
 where $R_i^{\text{plaid}}$ is the baseline-subtracted plaid response at
-direction $i$. Values of $P > 1$ indicate facilitation (the observed plaid
-response exceeds the linear prediction), $P < 1$ indicates suppression
-(the observed response falls below the prediction), and $P = 1$ indicates
-perfect linearity. This ratio metric normalizes for differences in baseline
-response magnitude across ROIs.
+direction $i$ and $N$ is the number of directions tested. Positive values of
+$P$ indicate facilitation (the observed plaid response exceeds the linear
+prediction on average), negative values indicate suppression (the observed
+response falls below the prediction), and $P = 0$ indicates perfect
+linearity.
 
 \subsubsection{Metric C: shape similarity}
 
@@ -242,7 +243,7 @@ tuning curves:
 \end{equation}
 Higher values of $C$ indicate that the shape of the plaid tuning curve is
 more linearly predictable from the component grating responses, independent of
-overall amplitude differences captured by $P$.
+the overall amplitude deviation captured by $P$.
 
 \subsubsection{Signal-to-noise ratio}
 
@@ -266,8 +267,10 @@ tuning curves measured at 8 spatial frequencies (0.64--7.68~cyc/deg)
 \citep{devries1982}.
 
 \paragraph{Orientation tuning half-width.}
-Half-width at half-height of the grating tuning curve at the orthogonal
-orientation, measuring the sharpness of orientation selectivity.
+Half-width at half-height of the grating tuning curve, measured on the
+flank toward the orthogonal orientation. This captures how broadly the
+neuron responds toward the orientation of the cross-oriented grating
+component.
 
 \paragraph{Local Homogeneity Index (LHI).}
 LHI quantifies the similarity of orientation preference between neighboring
@@ -355,7 +358,7 @@ to a linear prediction derived from the grating tuning curve.
   $-90^{\circ}$ and summing.
   \textbf{(C)}~Observed plaid tuning curve (red) compared to the linear
   prediction (dashed). In this example neuron, the observed plaid response
-  falls below the prediction ($P < 1$), indicating cross-orientation
+  falls below the prediction ($P < 0$), indicating cross-orientation
   suppression.}
   \label{fig:stimuli}
 \end{figure}
@@ -372,7 +375,7 @@ to a linear prediction derived from the grating tuning curve.
   \textbf{(C)}~The linear prediction is the sum of the responses to each
   component grating of the plaid, computed by shifting and summing the
   grating tuning curve. Deviations from this prediction are quantified by
-  metrics $P$ (ratio) and $C$ (correlation).}
+  metrics $P$ (signed deviation) and $C$ (shape correlation).}
   \label{fig:model}
 \end{figure}
 
@@ -381,24 +384,24 @@ to a linear prediction derived from the grating tuning curve.
 The primary metric $P$ showed a strong negative correlation with cortical
 depth at the site level ($r = -0.768$, 95\% CI: $[-0.908, -0.617]$,
 $p = 1.83 \times 10^{-6}$, $n = 28$; Figure~\ref{fig:depth}A). Superficial
-sites (140--266~$\mu$m) exhibited positive mean $P$ values, indicating
-facilitation---the observed plaid response exceeded the linear prediction.
-Deeper sites (392--518~$\mu$m) exhibited negative mean $P$ values,
-indicating suppression. The crossover from facilitation to suppression
-occurred at approximately 350~$\mu$m depth.
+sites (140--266~$\mu$m) exhibited positive mean $P$, indicating that the
+observed plaid response exceeded the linear prediction (facilitation).
+Deeper sites (392--518~$\mu$m) exhibited negative mean $P$, indicating that
+the observed response fell below the prediction (suppression). The transition
+from facilitation to suppression occurred at approximately 350~$\mu$m depth.
 
 % --- Figure 3: P and C vs depth ---
 \begin{figure}[tbp]
   \centering
   % \includegraphics[width=\textwidth]{figures/fig3_depth.pdf}
   \caption{\textbf{Depth-dependent changes in cross-orientation metrics.}
-  \textbf{(A)}~Metric $P$ (suppression/facilitation ratio) decreased with
-  cortical depth ($r = -0.768$, $p = 1.8 \times 10^{-6}$, $n = 28$). Each
-  point represents the site mean across all ROIs at one imaging depth; error
-  bars indicate SEM. Dashed line shows linear regression. Positive $P$
-  indicates facilitation; negative $P$ indicates suppression.
+  \textbf{(A)}~Metric $P$ (mean signed deviation from linear prediction)
+  decreased with cortical depth ($r = -0.768$,
+  $p = 1.83 \times 10^{-6}$, $n = 28$). Each point represents the site mean
+  across all ROIs at one imaging depth; error bars indicate SEM. Dashed line
+  shows linear regression. $P > 0$: facilitation; $P < 0$: suppression.
   \textbf{(B)}~Metric $C$ (shape similarity) increased with depth
-  ($r = +0.798$, $p = 3.7 \times 10^{-7}$). Higher $C$ indicates the plaid
+  ($r = +0.798$, $p = 3.67 \times 10^{-7}$). Higher $C$ indicates the plaid
   tuning curve shape is more linearly predictable from grating responses.
   \textbf{(C)}~Scatter plot of $P$ versus $C$ across sites, colored by
   cortical depth, showing their anticorrelation ($r = -0.647$, $p < 0.001$).
@@ -422,8 +425,10 @@ Figure~\ref{fig:depth}C).
 
 Mean preferred spatial frequency was higher at superficial depths and
 decreased with cortical depth (Figure~\ref{fig:sf}). Within individual
-sites, spatial frequency showed a consistent relationship with
-cross-orientation metrics. Mediation analysis revealed that spatial frequency
+sites, spatial frequency showed weak correlations with $P$ (significant at
+7 of 28 sites), indicating that spatial frequency preference does not
+strongly predict $P$ within a single imaging plane. However, across the
+full depth range, mediation analysis revealed that spatial frequency
 preference accounted for approximately 40\% of the $P$--depth correlation:
 the partial correlation between $P$ and depth controlling for spatial
 frequency was $r = -0.463$ (compared to $r = -0.768$ at zero order;
@@ -444,9 +449,10 @@ Table~\ref{tab:mediation}).
 
 Baseline fluorescence increased with cortical depth, consistent with the
 progressive increase in laser power applied at deeper imaging planes to
-compensate for optical scattering (Figure~\ref{fig:baseline}). This
-depth-dependent change in baseline was accounted for in all metrics by
-using baseline-subtracted responses.
+compensate for optical scattering (Figure~\ref{fig:baseline}). Within
+individual sites, $P$ and baseline fluorescence were uncorrelated at 24 of
+28 sites, indicating that the depth gradient in $P$ is not an artifact of
+imaging depth. All metrics used baseline-subtracted responses.
 
 % --- Figure 5: Baseline ---
 \begin{figure}[tbp]
@@ -461,11 +467,12 @@ using baseline-subtracted responses.
 \subsection{Orientation tuning bandwidth broadens with depth}
 
 Orientation tuning half-width increased with cortical depth ($r = +0.869$,
-$p = 2.04 \times 10^{-9}$; Figure~\ref{fig:bandwidth}A), indicating that
-neurons at greater depth had broader orientation tuning. Within individual
-sites, half-width showed a strong negative correlation with $C$ at 15 of 28
-sites (Figure~\ref{fig:bandwidth}B), indicating that more broadly tuned
-neurons had less linearly predictable plaid responses within a given depth.
+$p = 2.04 \times 10^{-9}$; Figure~\ref{fig:bandwidth}A), with mean
+half-width broadening from approximately $60^{\circ}$ at superficial sites to
+approximately $80^{\circ}$ at deeper sites. Within individual sites,
+half-width showed a significant negative correlation with $C$ at 15 of 28
+sites (Figure~\ref{fig:bandwidth}B): at a given depth, more broadly tuned
+neurons tended to have less linearly predictable plaid tuning shapes.
 Tuning bandwidth mediated approximately 21\% of the $P$--depth effect
 (Table~\ref{tab:mediation}).
 
@@ -486,15 +493,16 @@ Tuning bandwidth mediated approximately 21\% of the $P$--depth effect
 \subsection{Local homogeneity decreases with depth}
 
 The local homogeneity index (LHI) showed a strong negative correlation with
-depth ($r = -0.93$; Figure~\ref{fig:lhi}A), consistent with a transition from
-more homogeneous orientation preference maps in superficial layer~2/3
-(orientation domains) to more heterogeneous maps at depth (near pinwheel
-centers or in regions with less columnar organization).
+depth ($r = -0.93$, $p \ll 0.001$; Figure~\ref{fig:lhi}A), with LHI
+decreasing by approximately 35\% from 150 to 520~$\mu$m. This is consistent
+with a transition from more homogeneous orientation preference maps in
+superficial layer~2/3 (orientation domains) to more heterogeneous maps at
+depth (near pinwheel centers or in regions with less columnar organization).
 
 Within individual sites, $C$ and LHI showed a consistently moderate negative
 correlation at 26 of 28 sites (Figure~\ref{fig:lhi}B), indicating that
-neurons in more homogeneous orientation neighborhoods had less predictable
-plaid tuning.
+neurons in more heterogeneous orientation neighborhoods (lower LHI, near
+pinwheel centers) had more linearly predictable plaid tuning shapes.
 
 % --- Figure 7: LHI ---
 \begin{figure}[tbp]
@@ -512,11 +520,16 @@ plaid tuning.
 
 \subsection{Orientation selectivity mildly decreases with depth}
 
-OSI showed a mild decrease with cortical depth. Within individual sites, $C$
-and OSI were strongly positively correlated at 26 of 28 sites: neurons with
-higher orientation selectivity showed more linearly predictable plaid tuning.
-In contrast, $P$ showed no significant relationship with OSI at the majority
-of sites (21 of 28; Figure~\ref{fig:osi}).
+OSI showed a mild decrease with cortical depth, from approximately 0.66 at
+150~$\mu$m to 0.59 at 520~$\mu$m. Within individual sites, $C$ and OSI were
+strongly positively correlated at 26 of 28 sites: neurons with higher
+orientation selectivity showed more linearly predictable plaid tuning.
+In contrast, $P$ showed no significant relationship with OSI at 21 of 28
+sites (Figure~\ref{fig:osi}). Six deeper sites showed weak negative
+$P$--OSI correlations ($r \approx -0.2$ to $-0.49$), but the lack of
+relationship at shallow depths suggests that the strength of cross-orientation
+suppression is largely independent of orientation selectivity across most of
+layer~2/3.
 
 % --- Figure 8: OSI ---
 \begin{figure}[tbp]
@@ -537,9 +550,9 @@ of sites (21 of 28; Figure~\ref{fig:osi}).
 The $P$--depth and $C$--depth correlations remained significant after
 controlling for ROI radius, SNR, OSI, and spatial frequency preference
 using partial correlations (Table~\ref{tab:controls}). Mixed-effects models
-at the ROI level confirmed that the $P$--depth relationship was highly
-significant ($\beta_{\text{depth}} = -9.30$,
-$p = 7.9 \times 10^{-10}$; Table~\ref{tab:mixed}). The effect survived
+at the ROI level confirmed the $P$--depth relationship
+($\beta_{\text{depth}} = -9.30$,
+$p = 7.9 \times 10^{-10}$; Table~\ref{tab:mixed}), and the effect survived
 additional controls for ROI radius and SNR
 ($\beta_{\text{depth}} = -8.64$, $p = 2.2 \times 10^{-8}$).
 
@@ -547,10 +560,10 @@ Subpopulation analyses confirmed that the $P$--depth effect was robust across
 neurons with high versus low OSI and high versus low spatial frequency
 preference (all $|r| > 0.75$, all $p < 4 \times 10^{-6}$).
 
-The $C$--depth correlation, while significant at the site level, lost
-significance in the mixed-effects model after controlling for ROI radius
-and SNR ($p = 0.151$), indicating partial confounding by morphological
-factors.
+The $C$--depth relationship was highly significant in the simple mixed-effects
+model ($\beta_{\text{depth}} = +0.086$, $p = 1.7 \times 10^{-11}$), but lost
+significance after controlling for ROI radius and SNR ($p = 0.151$),
+indicating partial confounding by morphological factors.
 
 % --- Table: Mediation ---
 \begin{table}[tbp]
@@ -597,12 +610,16 @@ factors.
   \label{tab:mixed}
   \begin{tabular}{lcc}
     \toprule
-    Model & Depth coefficient & $p$-value \\
+    Model & $\beta_{\text{depth}}$ & $p$-value \\
     \midrule
-    $P \sim \text{Depth}$                       & $-9.30$ & $7.9 \times 10^{-10}$ \\
-    $P \sim \text{Depth} + \text{Radius} + \text{SNR}$ & $-8.64$ & $2.2 \times 10^{-8}$  \\
-    $C \sim \text{Depth}$                       & $+0.086$ & $< 0.001$            \\
-    $C \sim \text{Depth} + \text{Radius} + \text{SNR}$ & $+0.036$ & $0.151$ (NS)  \\
+    $P \sim \text{Depth} + (1|\text{Site})$
+      & $-9.30$  & $7.9 \times 10^{-10}$  \\
+    $P \sim \text{Depth} + \text{Radius} + \text{SNR} + (1|\text{Site})$
+      & $-8.64$  & $2.2 \times 10^{-8}$   \\
+    $C \sim \text{Depth} + (1|\text{Site})$
+      & $+0.086$ & $1.7 \times 10^{-11}$  \\
+    $C \sim \text{Depth} + \text{Radius} + \text{SNR} + (1|\text{Site})$
+      & $+0.036$ & $0.151$ (NS)           \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -631,7 +648,7 @@ selectivity, lower local homogeneity, and cross-orientation suppression.
     Preferred spatial frequency     & Lower      \\
     Orientation selectivity (OSI)   & Lower      \\
     Local homogeneity (LHI)         & Lower      \\
-    Cross-orientation metric ($P$)  & More suppressive \\
+    Cross-orientation suppression ($P$) & Stronger (more negative) \\
     \bottomrule
   \end{tabular}
 \end{table}
