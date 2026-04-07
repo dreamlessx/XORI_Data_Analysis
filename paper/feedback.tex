@@ -74,6 +74,17 @@ Even though deeper neurons are more suppressed, their plaid tuning
 \emph{shape} is more predictable from the grating response. This is the
 normalization signature: gain decreases but shape is preserved.
 
+\subsection*{The P--C dissociation (why this matters)}
+\begin{center}
+\includegraphics[width=\textwidth]{figures/feedback_pc_dissociation.pdf}
+\end{center}
+
+P goes down (A) while C goes up (B). This rules out a trivial explanation
+like ``deep neurons just have noisier data.'' If it were noise, both P and C
+would degrade. Instead, the plaid shape becomes \emph{more} predictable even
+as the amplitude drops. That's the hallmark of divisive normalization: it
+scales the gain but preserves the tuning curve shape.
+
 % ===================================================================
 \newpage
 \section{Example Tuning Curves}
@@ -126,6 +137,17 @@ All (radius + SNR + OSI + SF) & $-0.520$ & $0.005$ \\
 \finding{The P-depth effect survives removing every confound we can
 measure. No single variable or combination explains it away.}
 
+\subsection*{Visual: how partial correlations work}
+\begin{center}
+\includegraphics[width=\textwidth]{figures/feedback_partial_corr.pdf}
+\end{center}
+
+\textbf{A}: Raw P vs depth---strong negative correlation.
+\textbf{B}: Both depth and P correlate with ROI radius (the confound).
+We regress radius out of both.
+\textbf{C}: After removal, the residuals still correlate. The confound
+didn't explain the effect.
+
 % ===================================================================
 \newpage
 \section{Mixed-Effects Models}
@@ -164,6 +186,19 @@ $C \sim \text{Depth} + \text{Radius} + \text{SNR} + (1|\text{Site})$ & $+0.036$ 
 \finding{P survives all controls ($p = 2.2 \times 10^{-8}$). C loses
 significance after controlling for radius and SNR---it's partially
 confounded by morphological factors. P is the stronger metric.}
+
+\subsection*{Visual: naive pooling vs.\ mixed-effects}
+\begin{center}
+\includegraphics[width=\textwidth]{figures/feedback_mixed_effects.pdf}
+\end{center}
+
+\textbf{A}: Naive approach---treat every ROI as independent. This is
+pseudoreplication: 170~ROIs from the same site aren't 170 independent
+measurements of the depth effect.
+\textbf{B}: Mixed-effects---each site (color) gets its own baseline
+(horizontal bar = random intercept). The black line is the shared depth
+slope. This separates ``site-to-site variability'' from ``the effect of
+depth,'' which is what we actually want to test.
 
 % ===================================================================
 \newpage
@@ -207,6 +242,18 @@ OSI & $-0.678$ & $0.028$ & 4\% \\
 \finding{This is what motivates the connectomics follow-up: the
 unexplained 60\% is presumably in the wiring.}
 
+\subsection*{Visual: what each covariate explains}
+\begin{center}
+\includegraphics[width=0.7\textwidth]{figures/feedback_mediation.pdf}
+\end{center}
+
+SF is the single biggest explainer at 40\%. But the gray bar---the
+unexplained portion---is the most important. It means there's a genuine
+depth-dependent change in cross-orientation suppression that goes beyond
+what we can attribute to any measured functional property. The
+connectomics reconstruction will let us ask whether this remaining 60\% is
+in the wiring.
+
 % ===================================================================
 \newpage
 \section{Subpopulation Splits}
@@ -231,6 +278,16 @@ Low SF preference & \checkmark \\
 \end{center}
 
 \finding{The effect is universal. Not driven by one neuron subclass.}
+
+\subsection*{Visual: the effect holds in every subgroup}
+\begin{center}
+\includegraphics[width=\textwidth]{figures/feedback_subpop.pdf}
+\end{center}
+
+\textbf{A}: All neurons together. \textbf{B}: High-OSI neurons only---still
+significant. \textbf{C}: Low-OSI neurons only---still significant. Same
+pattern for high/low SF splits. No matter how you slice the population, the
+depth gradient in P is present.
 
 % ===================================================================
 \newpage
