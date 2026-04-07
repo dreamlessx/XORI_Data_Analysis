@@ -175,8 +175,12 @@ def plot_metric_vs_sf_site(site_name, sf_values, metrics, metric_key,
     fig, ax = plt.subplots(figsize=(10, 8))
 
     if use_log:
-        # Plot raw SF values on a log-scaled axis
-        ax.scatter(raw_sf, y_vals, s=32, alpha=0.7)
+        # Add small multiplicative jitter to spread discrete SF columns
+        np.random.seed(42)
+        jitter = 10**(np.random.uniform(-0.03, 0.03, len(raw_sf)))
+        sf_jittered = raw_sf * jitter
+
+        ax.scatter(sf_jittered, y_vals, s=32, alpha=0.5)
         ax.set_xscale('log')
 
         # Regression line in log space, displayed in data coords
