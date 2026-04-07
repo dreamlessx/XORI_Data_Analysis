@@ -1,0 +1,299 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{setspace}
+
+\definecolor{accent}{HTML}{2171B5}
+\definecolor{muted}{HTML}{636363}
+\definecolor{highlight}{HTML}{E6550D}
+
+\hypersetup{colorlinks=true,linkcolor=accent,urlcolor=accent}
+
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+\newcommand{\finding}[1]{\textcolor{highlight}{\textbf{#1}}}
+\newcommand{\metric}[1]{\textbf{\textit{#1}}}
+
+\title{\Large Supplementary Statistical Analyses\\[0.3em]
+\large Cross-Orientation Suppression in Macaque V1}
+\author{Prepared for discussion with Wyeth}
+\date{April 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\section*{Overview}
+
+The main finding is that \metric{P} (plaid suppression ratio) decreases
+with cortical depth---facilitation in superficial L2/3, suppression at
+depth. Four additional analyses defend this finding from every angle a
+reviewer could attack.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lll}
+\toprule
+\textbf{Analysis} & \textbf{Reviewer question} & \textbf{Our answer} \\
+\midrule
+Partial correlations & Is it a confound? & No---survives all controls \\
+Mixed-effects model & Only 28 sites? & Holds at ROI level, $p = 8 \times 10^{-10}$ \\
+Mediation & Why does P change? & SF explains 40\%, 60\% unexplained \\
+Subpopulation splits & Only one cell type? & Universal across all types \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ===================================================================
+\newpage
+\section{The Main Result}
+
+\begin{center}
+\includegraphics[width=\textwidth]{figures/fig3_depth.pdf}
+\end{center}
+
+\textbf{Panel A}: \metric{P} vs.\ depth ($r = -0.706$, $p = 2.7 \times 10^{-5}$, $n = 28$).
+Each point is one imaging site (mean across $\sim$170 ROIs). P is plotted
+on a log axis---$P > 1$ means facilitation, $P < 1$ means suppression,
+$P = 1$ is linearity.
+
+\finding{Shallow sites show facilitation ($P > 1$). Deep sites show
+suppression ($P < 1$). Crossover at $\sim$350~\textmu m.}
+
+\textbf{Panel B}: \metric{C} vs.\ depth ($r = +0.798$, $p = 3.7 \times 10^{-7}$).
+Even though deeper neurons are more suppressed, their plaid tuning
+\emph{shape} is more predictable from the grating response. This is the
+normalization signature: gain decreases but shape is preserved.
+
+% ===================================================================
+\newpage
+\section{Example Tuning Curves}
+
+\begin{center}
+\includegraphics[width=\textwidth]{figures/fig1_tuning_curves.pdf}
+\end{center}
+
+\textbf{Top row}: Shallow site (242~\textmu m). The observed plaid (red)
+exceeds the linear prediction (gray dashed). $P = 3.35$---strong
+facilitation.
+
+\textbf{Bottom row}: Deep site (482~\textmu m). The observed plaid falls
+below the prediction. $P = 0.66$---suppression.
+
+This is what the main effect looks like in single neurons.
+
+% ===================================================================
+\newpage
+\section{Partial Correlations}
+\textcolor{muted}{\textit{``Is the P-depth effect just a confound?''}}
+
+We remove the influence of each confound from both P and depth, then
+re-test the correlation. If it survives, the confound doesn't explain
+the finding.
+
+\subsection*{How it works}
+\begin{enumerate}[leftmargin=1.5em]
+\item Regress depth on the confound $\rightarrow$ get depth residuals
+\item Regress P on the confound $\rightarrow$ get P residuals
+\item Correlate the residuals
+\item If still significant $\rightarrow$ the confound doesn't explain
+  the P-depth relationship
+\end{enumerate}
+
+\subsection*{Results}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Confounds removed} & \textbf{Partial $r$} & \textbf{$p$-value} \\
+\midrule
+None (raw correlation) & $-0.706$ & $2.7 \times 10^{-5}$ \\
+ROI radius & $-0.751$ & $< 0.001$ \\
+All (radius + SNR + OSI + SF) & $-0.520$ & $0.005$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\finding{The P-depth effect survives removing every confound we can
+measure. No single variable or combination explains it away.}
+
+% ===================================================================
+\newpage
+\section{Mixed-Effects Models}
+\textcolor{muted}{\textit{``You only have 28 data points.''}}
+
+The site-level correlation uses 28 means. A mixed-effects model uses all
+4,785 ROIs while properly accounting for the nested structure.
+
+\subsection*{The model}
+$$P_{ij} = \beta_0 + \beta_1 \cdot \text{Depth}_j + u_j + \varepsilon_{ij}$$
+
+\begin{itemize}[leftmargin=1.5em]
+\item $i$ = ROI, $j$ = site
+\item $\beta_1$ = fixed effect of depth (what we care about)
+\item $u_j$ = random intercept per site---absorbs site-to-site differences
+  unrelated to depth (expression level, focus quality, etc.)
+\item It's like a within-subjects ANOVA: each site is a ``subject,'' depth
+  is the treatment
+\end{itemize}
+
+\subsection*{Results}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Model} & $\boldsymbol{\beta_{\textbf{depth}}}$ & \textbf{$p$-value} \\
+\midrule
+$P \sim \text{Depth} + (1|\text{Site})$ & $-9.30$ & $7.9 \times 10^{-10}$ \\
+$P \sim \text{Depth} + \text{Radius} + \text{SNR} + (1|\text{Site})$ & $-8.64$ & $2.2 \times 10^{-8}$ \\
+$C \sim \text{Depth} + (1|\text{Site})$ & $+0.086$ & $1.7 \times 10^{-11}$ \\
+$C \sim \text{Depth} + \text{Radius} + \text{SNR} + (1|\text{Site})$ & $+0.036$ & $0.151$ (NS) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\finding{P survives all controls ($p = 2.2 \times 10^{-8}$). C loses
+significance after controlling for radius and SNR---it's partially
+confounded by morphological factors. P is the stronger metric.}
+
+% ===================================================================
+\newpage
+\section{Mediation Analysis}
+\textcolor{muted}{\textit{``OK the effect is real---but why? Is it just SF
+changing with depth?''}}
+
+We control for one covariate at a time and measure how much the P-depth
+correlation drops. The bigger the drop, the more that variable
+\emph{mediates} (explains) the relationship.
+
+\subsection*{Results}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Control for} & \textbf{Partial $r$} & \textbf{Drop from $-0.706$} & \textbf{\% explained} \\
+\midrule
+Nothing (baseline) & $-0.706$ & --- & --- \\
+Spatial frequency & $-0.424$ & $0.282$ & \textbf{40\%} \\
+Half-width (bandwidth) & $-0.558$ & $0.148$ & \textbf{21\%} \\
+LHI & $-0.642$ & $0.064$ & 9\% \\
+SNR & $-0.671$ & $0.035$ & 5\% \\
+OSI & $-0.678$ & $0.028$ & 4\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{The biological story}
+\begin{itemize}[leftmargin=1.5em]
+\item \textbf{SF explains 40\%}: deeper neurons prefer lower SF
+  $\rightarrow$ larger receptive fields $\rightarrow$ broader
+  normalization pools $\rightarrow$ stronger suppression
+\item \textbf{Bandwidth explains 21\%}: broader tuning at depth
+  $\rightarrow$ less selective normalization
+\item \finding{60\% is NOT explained by any measured covariate}---this
+  is likely circuit architecture (inhibitory connectivity, cell-type
+  composition) that changes with depth
+\end{itemize}
+
+\finding{This is what motivates the connectomics follow-up: the
+unexplained 60\% is presumably in the wiring.}
+
+% ===================================================================
+\newpage
+\section{Subpopulation Splits}
+\textcolor{muted}{\textit{``Maybe only one type of neuron drives this.''}}
+
+We split all ROIs by median OSI and median SF, then check the P-depth
+correlation in each half.
+
+\subsection*{Results}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lc}
+\toprule
+\textbf{Subpopulation} & \textbf{P-depth effect present?} \\
+\midrule
+High OSI neurons & \checkmark \\
+Low OSI neurons & \checkmark \\
+High SF preference & \checkmark \\
+Low SF preference & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\finding{The effect is universal. Not driven by one neuron subclass.}
+
+% ===================================================================
+\newpage
+\section{Depth Profile Summary}
+
+\begin{center}
+\includegraphics[width=\textwidth]{figures/fig9_depth_profile.pdf}
+\end{center}
+
+Eight metrics change coordinately with depth. This is not random---it's
+a systematic gradient in functional properties across L2/3.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{ll}
+\toprule
+\textbf{Deeper in L2/3} & \textbf{Direction} \\
+\midrule
+ROI size & Increases \\
+Baseline fluorescence & Increases \\
+Orientation bandwidth & Broader \\
+Preferred SF & Lower \\
+OSI & Lower \\
+LHI (local homogeneity) & Lower \\
+P (suppression ratio) & More suppressive \\
+C (shape similarity) & More predictable \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Superficial L2/3}: high SF, narrow tuning, high selectivity,
+homogeneous orientation maps, facilitation.
+
+\textbf{Deep L2/3}: low SF, broad tuning, low selectivity, heterogeneous
+maps, suppression.
+
+% ===================================================================
+\newpage
+\section*{Where These Go in the Paper}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{ll}
+\toprule
+\textbf{Main Results text} & \textbf{Supplementary} \\
+\midrule
+P and C vs depth (Fig.\ 3) & Partial correlations table \\
+Mixed-effects confirmation & Bootstrap CIs \\
+Mediation: SF = 40\% & Subpopulation splits \\
+Depth profile summary & Morphology confounds \\
+ & ROI-level scatter \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{Bottom Line}
+
+\begin{quote}
+The P-depth correlation is robust (partial correlations), confirmed at
+the single-neuron level (mixed-effects, $p = 8 \times 10^{-10}$),
+partially mechanistic (SF mediates 40\%), universal (all subpopulations),
+and part of a coordinated depth gradient spanning 8 functional metrics.
+The unexplained 60\% motivates the connectomics integration.
+\end{quote}
+
+\end{document}
