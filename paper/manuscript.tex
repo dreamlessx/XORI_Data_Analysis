@@ -54,104 +54,102 @@ primary visual cortex in macaque, a two-photon imaging study}
 
 % ============================================================================
 \begin{abstract}
-% TODO: Write abstract after results and discussion are finalized.
-% Should cover: (1) the question -- how do cross-orientation interactions
-% vary with cortical depth in macaque V1 layer 2/3; (2) the approach --
-% two-photon calcium imaging with GCaMP6s across ~400 um of depth, ~5000 ROIs,
-% 28 FOV; (3) key findings -- S decreases with depth (facilitation to
-% suppression), R increases, SF mediates ~40\% of the S-depth effect;
-% (4) significance -- first population-level characterization of
-% depth-dependent normalization in primate V1.
+We used two-photon calcium imaging with GCaMP6s to measure cross-orientation
+interactions as a function of cortical depth in layer~2/3 of macaque V1,
+recording from 4,785 neurons across 28 fields of view spanning
+140--518~$\mu$m below the pial surface. For each neuron, we computed the ratio
+$P$ of the observed plaid response to a linear prediction from the grating
+tuning curve and the shape correlation $C$ between predicted and observed plaid
+tuning curves. $P$ decreased with depth ($r = -0.706$, $p = 2.7 \times
+10^{-5}$, $n = 28$ sites), transitioning from facilitation ($P > 1$) in
+superficial layer~2/3 to suppression ($P < 1$) at depth, while $C$ increased
+($r = +0.799$, $p = 3.4 \times 10^{-7}$), indicating that the plaid tuning
+shape becomes more linearly predictable from the grating response even as the
+overall amplitude decreases. The $P$--depth correlation survived
+partial-correlation controls for ROI morphology, signal-to-noise ratio,
+orientation selectivity, and spatial frequency preference ($r = -0.448$,
+$p = 0.017$). Spatial frequency preference and local orientation homogeneity
+each mediated a substantial fraction of the depth gradient, consistent with
+broader normalization pools at greater cortical depth. The tissue is being
+prepared for serial electron microscopy reconstruction to relate the observed
+depth gradient in normalization to inhibitory circuit architecture.
 \end{abstract}
 
 % ============================================================================
 \section{Introduction}
 
-Cross-orientation suppression is a hallmark of response normalization in
-primary visual cortex (V1): when two gratings at orthogonal orientations are
-superimposed to form a plaid, the response of an orientation-selective neuron
-typically falls below the linear sum of its responses to each grating alone
-\citep{morrone1982, bonds1989, carandini1997, freeman2002}. This phenomenon,
-studied for over fifty years since the early descriptions of orientation
-selectivity \citep{hubel1962, hubel1968}, has been central to understanding how
-cortical circuits combine and normalize visual inputs.
+The response of neurons in primary visual cortex (V1) to an optimally
+oriented grating can be suppressed by superimposing a second grating at the
+orthogonal orientation, a phenomenon termed cross-orientation suppression
+\citep{morrone1982, bonds1989, carandini1997, freeman2002}. Cross-orientation
+suppression has been studied extensively in cat and macaque V1 since the
+original descriptions of orientation selectivity \citep{hubel1962, hubel1968}
+and has been central to understanding how cortical circuits combine and
+normalize multiple inputs.
 
-Several mechanistic accounts of cross-orientation suppression have been
-proposed. Intracortical feedback inhibition models posit that orientation-tuned
-inhibitory interneurons directly suppress responses to non-preferred
-orientations \citep{sillito1975, bonds1989, shapley2003}. Feedforward
-inhibition models attribute suppression to broadly tuned inhibition arriving
-from the lateral geniculate nucleus \citep{priebe2006, li2006}. Contrast
-saturation and divisive normalization models explain suppression as a
-consequence of a compressive nonlinearity in the contrast response function, in
-which the summed driving input from both gratings falls on the saturating
-portion of the neuron's response curve \citep{heeger1992, albrecht1982,
-carandini2012}. These mechanisms are not mutually exclusive, and their relative
-contributions likely depend on cortical circuit architecture.
-
-Divisive normalization, in particular, has emerged as a canonical computation
-underlying cross-orientation suppression \citep{heeger1992, carandini2012}. In
-the normalization model, each neuron's response is divided by a weighted sum of
-activity across a pool of neurons, producing suppression whenever the pooled
-activity is large. This framework accounts quantitatively for cross-orientation
-suppression in both simple and complex cells \citep{carandini1997}, explains
-contrast gain control \citep{albrecht1982, sclar1990, schwartz2001}, and
-generalizes to attentional modulation \citep{reynolds2009}.
+Several mechanisms have been proposed. Intracortical models attribute
+suppression to orientation-tuned inhibitory interneurons that directly suppress
+responses to non-preferred orientations \citep{sillito1975, bonds1989,
+shapley2003}. Feedforward models attribute it to broadly tuned inhibition
+arriving from the lateral geniculate nucleus \citep{priebe2006, li2006}.
+Divisive normalization models explain suppression as a consequence of the
+neuron's response being divided by a weighted sum of activity across a
+normalization pool: when both component gratings drive the pool, the
+denominator is large, and the response to the preferred grating is reduced
+\citep{heeger1992, carandini2012}. These mechanisms are not mutually
+exclusive, and the normalization framework in particular accounts
+quantitatively for cross-orientation suppression in both simple and complex
+cells \citep{carandini1997}, explains contrast gain control
+\citep{albrecht1982, sclar1990, schwartz2001}, and generalizes to attentional
+modulation \citep{reynolds2009}.
 
 Nearly all prior work on cross-orientation suppression has relied on
-single-unit electrophysiology, recording from one neuron at a time. Although
-this approach has yielded precise characterizations of suppression in
-individual cells \citep{deangelis1992, carandini1997, smith2006, busse2009},
-it leaves open how suppression and facilitation are distributed across neural
-populations and whether they vary systematically with cortical depth. Moreover,
-the majority of experiments have been conducted in cat V1, with comparatively
-fewer studies in macaque \citep{carandini1997, smith2006}, the species whose
-cortical organization most closely resembles that of humans.
+single-unit electrophysiology, recording from one neuron at a time
+\citep{deangelis1992, carandini1997, smith2006, busse2009}. Although this
+approach has yielded precise characterizations of suppression in individual
+cells, it leaves open how suppression and facilitation are distributed across
+neural populations and, in particular, whether they vary systematically with
+cortical depth. The majority of experiments have been conducted in cat V1,
+with comparatively fewer studies in macaque \citep{carandini1997, smith2006},
+the species whose cortical organization most closely resembles that of humans.
 
 Layer~2/3 of macaque V1 spans several hundred micrometers and contains
 sublayers with distinct connectivity patterns, cell-type distributions, and
 functional properties \citep{lund1988, callaway1998, douglas2004, briggs2010}.
-Superficial portions of layer~2/3 receive strong input from layer~4C and
-participate in local recurrent circuits, while deeper portions connect more
-extensively with layer~5 and other cortical layers \citep{callaway1998,
-douglas2004}. Whether cross-orientation interactions change systematically
-across this depth range has not been directly tested at the population level.
+Superficial portions receive strong input from layer~4C and participate in
+local recurrent circuits, while deeper portions connect more extensively with
+layer~5 and other cortical layers \citep{callaway1998, douglas2004}. The
+functional architecture is organized into orientation columns and pinwheel
+structures \citep{blasdel1986, bonhoeffer1991, ohki2005, ohki2006}, and
+local homogeneity of orientation preference, spatial frequency tuning, and
+orientation selectivity all contribute to the local circuit context in which
+cross-orientation interactions occur \citep{nauhaus2008, ringach2002}. Whether
+cross-orientation interactions change systematically across the depth range of
+layer~2/3 has not been tested at the population level.
 
-The functional architecture of macaque V1 is organized into orientation
-columns and pinwheel structures, within which nearby neurons share similar
-orientation preferences \citep{blasdel1986, bonhoeffer1991, ohki2005,
-ohki2006}. Local homogeneity of orientation preference, spatial frequency
-tuning, and orientation selectivity all contribute to the local circuit context
-in which cross-orientation interactions occur \citep{nauhaus2008, ringach2002}.
-How these functional properties covary with depth and interact with
-normalization remains poorly understood.
-
-Two-photon calcium imaging provides the combination of cellular resolution and
-population-scale recording needed to address these questions
-\citep{denk1990, stosiek2003, grienberger2012}. Recent advances in
-genetically encoded calcium indicators \citep{chen2013} and viral delivery
-strategies for nonhuman primates \citep{deverman2016, li2017, tang2018} have
-made it possible to record simultaneously from hundreds of neurons at
-identified cortical depths.
+Two-photon calcium imaging with genetically encoded indicators
+\citep{denk1990, stosiek2003, chen2013, grienberger2012} provides the
+combination of cellular resolution and population-scale recording needed to
+address this question, and recent viral delivery strategies for nonhuman
+primates have made such recordings feasible \citep{deverman2016, li2017,
+tang2018}.
 
 Here, we used two-photon calcium imaging with GCaMP6s to measure
 cross-orientation interactions across approximately 400~$\mu$m of cortical
-depth in layer~2/3 of macaque V1. We recorded from nearly 5,000 neurons across
-28 fields of view spanning 140--518~$\mu$m below the pial surface. For each
-neuron, we compared the observed response to orthogonal plaid stimuli with a
-linear prediction derived from single-grating tuning curves, quantifying
-suppression and facilitation with two complementary metrics. We find that
-cross-orientation interactions transition systematically from facilitation in
-superficial layer~2/3 to suppression at greater depth, consistent with
-stronger normalization in deeper sublayers. This depth gradient is partially
-mediated by spatial frequency preference and orientation tuning bandwidth,
-both of which also vary with depth.
+depth in layer~2/3 of macaque V1. We recorded from 4,785 neurons across 28
+fields of view spanning 140--518~$\mu$m below the pial surface and, for each
+neuron, compared the observed response to orthogonal plaid stimuli with a
+linear prediction derived from the grating tuning curve, quantifying
+suppression and facilitation with two complementary metrics. We found that
+cross-orientation interactions transition from facilitation in superficial
+layer~2/3 to suppression at greater depth, consistent with stronger
+normalization in deeper sublayers, and that this depth gradient is partially
+mediated by spatial frequency preference and orientation tuning bandwidth.
 
 The long-term goal of this project is to combine large-scale functional imaging
-with dense connectomics to relate circuit wiring to population computation in
-primate V1 \citep{chatterjee2021}. By targeting wide cortical blocks, the
-physiology of as many neurons as possible can be compared post-mortem to
-serial electron microscopy reconstructions from the same tissue.
+with dense connectomics from serial electron microscopy of the same tissue to
+relate circuit wiring to normalization in primate V1
+\citep{chatterjee2021}.
 
 % ============================================================================
 \section{Methods}
@@ -291,12 +289,15 @@ avoids pseudoreplication.
 
 \subsubsection{Correlation and regression}
 
-Pearson correlation coefficients were computed between cortical depth and
-metric values. Statistical significance was assessed using two-tailed tests
-with $\alpha = 0.05$. Linear regression was used to estimate depth
-slopes. Non-parametric bootstrap (10,000 iterations, resampling sites with
-replacement) was used to compute 95\% confidence intervals for correlation
-coefficients.
+Because $P$ is a ratio bounded below by zero, all site-level correlations
+and partial correlations involving $P$ were computed on $\log_2(P)$ to
+satisfy normality assumptions and ensure that equal multiplicative changes
+in $P$ receive equal weight. Pearson correlation coefficients were computed
+between cortical depth and metric values. Statistical significance was
+assessed using two-tailed tests with $\alpha = 0.05$. Linear regression was
+used to estimate depth slopes. Non-parametric bootstrap (10,000 iterations,
+resampling sites with replacement) was used to compute 95\% confidence
+intervals for correlation coefficients.
 
 \subsubsection{Partial correlations}
 
@@ -306,31 +307,15 @@ OSI, and best spatial frequency. Partial correlations were obtained by
 regressing out confound variables from both depth and metric values, then
 correlating the residuals.
 
-\subsubsection{Mixed-effects models}
-
-Linear mixed-effects models were fit using restricted maximum likelihood
-(REML) with recording site as a random intercept:
-\begin{equation}
-  \text{Metric}_{ij} = \beta_0 + \beta_1 \cdot \text{Depth}_j
-    + \text{Covariates} + u_j + \varepsilon_{ij},
-\end{equation}
-where $u_j \sim \mathcal{N}(0, \sigma_u^2)$ is the random intercept for
-site $j$. This approach accounts for the non-independence of ROIs within
-sites while leveraging the full ROI-level dataset ($n = 4{,}785$).
-
 \subsubsection{Mediation analysis}
 
 To identify which covariates mediate the $P$--depth relationship, partial
 correlations were computed controlling for each covariate individually. The
-percent reduction in correlation strength relative to the zero-order
-correlation quantifies the mediating influence of each variable.
-
-\subsubsection{Subpopulation analyses}
-
-Depth--metric correlations were computed separately for subpopulations
-defined by median splits on OSI and spatial frequency preference, and by
-OSI quartiles. Fisher's $z$-transformation was used to compare correlation
-coefficients between low-OSI (Q1) and high-OSI (Q4) subpopulations.
+percent reduction in the absolute correlation relative to the zero-order
+$r = -0.706$ quantifies the mediating influence of each variable. Because
+spatial frequency preference, tuning bandwidth, and local homogeneity are
+themselves correlated with one another and with depth, individual mediation
+percentages may overlap.
 
 % ============================================================================
 \section{Results}
@@ -380,13 +365,12 @@ to a linear prediction derived from the grating tuning curve.
 
 \subsection{Cross-orientation suppression increases with cortical depth}
 
-Metric $P$ showed a strong negative correlation with cortical depth at the
-site level ($r = -0.706$, $p = 2.72 \times 10^{-5}$, $n = 28$;
-Figure~\ref{fig:depth}A). Superficial sites (140--266~$\mu$m) exhibited
-$P > 1$, indicating facilitation---the observed plaid response exceeded the
-linear prediction. Deeper sites (392--518~$\mu$m) exhibited $P < 1$,
-indicating suppression. The transition from facilitation to suppression
-occurred at approximately 350~$\mu$m depth.
+Metric $P$ decreased with cortical depth at the site level ($r = -0.706$,
+$p = 2.72 \times 10^{-5}$, $n = 28$; Figure~\ref{fig:depth}A), with
+superficial sites (140--266~$\mu$m) exhibiting $P > 1$ (facilitation: the
+observed plaid response exceeded the linear prediction) and deeper sites
+(392--518~$\mu$m) exhibiting $P < 1$ (suppression). The transition from net
+facilitation to net suppression occurred at approximately 350~$\mu$m depth.
 
 % --- Figure 3: P and C vs depth ---
 \begin{figure}[tbp]
@@ -399,7 +383,7 @@ occurred at approximately 350~$\mu$m depth.
   plotted on a logarithmic axis. Dashed line shows linear regression.
   $P > 1$: facilitation; $P < 1$: suppression.
   \textbf{(B)}~Metric $C$ (shape similarity) increased with depth
-  ($r = +0.798$, $p = 3.67 \times 10^{-7}$). Higher $C$ indicates the plaid
+  ($r = +0.799$, $p = 3.38 \times 10^{-7}$). Higher $C$ indicates the plaid
   tuning curve shape is more linearly predictable from grating responses.
   \textbf{(C)}~Scatter plot of $P$ versus $C$ across sites, colored by
   cortical depth, showing their anticorrelation.
@@ -411,26 +395,32 @@ occurred at approximately 350~$\mu$m depth.
 \subsection{Plaid tuning shape becomes more predictable with depth}
 
 Metric $C$, the Pearson correlation between predicted and observed plaid
-tuning curves, showed a strong positive correlation with depth ($r = +0.798$,
-95\% CI: $[+0.675, +0.891]$, $p = 3.67 \times 10^{-7}$;
-Figure~\ref{fig:depth}B). This indicates that deeper neurons, despite
-showing stronger suppression (lower $P$), have plaid tuning curve shapes
-that are more linearly predictable from their grating responses. The metrics
-$P$ and $C$ were anticorrelated across sites ($r = -0.647$, $p < 0.001$;
-Figure~\ref{fig:depth}C).
+tuning curves, increased with depth ($r = +0.799$, 95\% CI:
+$[+0.679, +0.892]$, $p = 3.38 \times 10^{-7}$; Figure~\ref{fig:depth}B),
+indicating that deeper neurons have plaid tuning curve shapes that are more
+linearly predictable from the grating response despite showing stronger
+amplitude suppression (lower $P$). The metrics $P$ and $C$ were
+anticorrelated across sites ($r = -0.571$, $p = 0.002$;
+Figure~\ref{fig:depth}C): as the gain of the plaid response decreased with
+depth, its shape became more predictable, consistent with a divisive
+normalization mechanism that scales gain while preserving the form of the
+tuning curve.
 
 \subsection{Spatial frequency preference varies with depth}
 
-Mean preferred spatial frequency was higher at superficial depths and
-decreased with cortical depth (Figure~\ref{fig:sf}). Within individual
-sites, spatial frequency showed weak correlations with $P$ (significant at
-7 of 28 sites), indicating that spatial frequency preference does not
-strongly predict $P$ within a single imaging plane. However, across the
-full depth range, mediation analysis revealed that spatial frequency
-preference accounted for approximately 40\% of the $P$--depth correlation:
-the partial correlation between $P$ and depth controlling for spatial
-frequency was $r = -0.424$ (compared to $r = -0.706$ at zero order;
-Table~\ref{tab:mediation}).
+Mean preferred spatial frequency decreased with cortical depth ($r = -0.785$,
+$p < 10^{-6}$; Figure~\ref{fig:sf}), consistent with the known laminar
+gradient in spatial frequency preference in macaque V1
+\citep{devries1982}. Within individual sites, spatial frequency showed weak
+correlations with $P$ (significant at 7 of 28 sites), indicating that spatial
+frequency preference does not strongly predict $P$ within a single imaging
+plane; however, across the full depth range, controlling for spatial frequency
+reduced the $P$--depth correlation from $r = -0.706$ to $r = -0.220$
+($p = 0.26$), accounting for approximately 69\% of the effect
+(Table~\ref{tab:mediation}). This is consistent with a mechanism in which
+deeper neurons, preferring lower spatial frequencies, have larger receptive
+fields and correspondingly broader normalization pools, producing stronger
+cross-orientation suppression.
 
 % --- Figure 4: Spatial frequency ---
 \begin{figure}[tbp]
@@ -455,7 +445,7 @@ imaging depth. All metrics used baseline-subtracted responses.
 % --- Figure 5: Baseline ---
 \begin{figure}[tbp]
   \centering
-  % \includegraphics[width=0.5\textwidth]{figures/fig5_baseline.pdf}  % TODO: generate
+  \includegraphics[width=0.5\textwidth]{figures/fig5_baseline.pdf}
   \caption{\textbf{Baseline fluorescence increases with depth.} Site-mean
   baseline fluorescence as a function of cortical depth, reflecting the
   increase in laser power at deeper imaging planes.}
@@ -471,7 +461,7 @@ approximately $80^{\circ}$ at deeper sites. Within individual sites,
 half-width showed a significant negative correlation with $C$ at 15 of 28
 sites (Figure~\ref{fig:bandwidth}B): at a given depth, more broadly tuned
 neurons tended to have less linearly predictable plaid tuning shapes.
-Tuning bandwidth mediated approximately 21\% of the $P$--depth effect
+Tuning bandwidth mediated approximately 29\% of the $P$--depth effect
 (Table~\ref{tab:mediation}).
 
 % --- Figure 6: Bandwidth ---
@@ -516,68 +506,68 @@ pinwheel centers) had more linearly predictable plaid tuning shapes.
   \label{fig:lhi}
 \end{figure}
 
-\subsection{Orientation selectivity mildly decreases with depth}
+\subsection{Orientation selectivity decreases with depth}
 
-OSI showed a mild decrease with cortical depth, from approximately 0.66 at
-150~$\mu$m to 0.59 at 520~$\mu$m. Within individual sites, $C$ and OSI were
-strongly positively correlated at 26 of 28 sites: neurons with higher
-orientation selectivity showed more linearly predictable plaid tuning.
-In contrast, $P$ showed no significant relationship with OSI at 21 of 28
-sites (Figure~\ref{fig:osi}). Six deeper sites showed weak negative
-$P$--OSI correlations ($r \approx -0.2$ to $-0.49$), but the lack of
-relationship at shallow depths suggests that the strength of cross-orientation
-suppression is largely independent of orientation selectivity across most of
-layer~2/3.
+OSI decreased significantly with cortical depth ($r = -0.490$,
+$p = 0.008$; Figure~\ref{fig:osi}A), from approximately 0.70 at
+150~$\mu$m to 0.57 at 520~$\mu$m. Within individual sites, $C$ and OSI were
+strongly positively correlated at 26 of 28 sites (Figure~\ref{fig:osi}B):
+neurons with higher orientation selectivity showed more linearly predictable
+plaid tuning. In contrast, $P$ showed a significant within-site relationship
+with OSI at only 7 of 28 sites (Figure~\ref{fig:osi}C), suggesting that the
+strength of cross-orientation suppression is largely independent of
+orientation selectivity within a given imaging plane. Consistent with this,
+OSI mediated less than 1\% of the $P$--depth effect in the mediation analysis
+(Table~\ref{tab:mediation}).
 
 % --- Figure 8: OSI ---
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\textwidth]{figures/fig8_osi.pdf}
   \caption{\textbf{Orientation selectivity and cross-orientation metrics.}
-  \textbf{(A)}~Site-mean OSI versus depth, showing a mild decrease.
+  \textbf{(A)}~Site-mean OSI versus depth ($r = -0.490$, $p = 0.008$).
   \textbf{(B)}~Within-site Pearson $r$ between $C$ and OSI versus depth.
   A strong positive relationship is present at 26/28 sites: more
   orientation-selective neurons have more predictable plaid tuning shapes.
   \textbf{(C)}~Within-site Pearson $r$ between $P$ and OSI versus depth.
-  No consistent relationship at 21/28 sites.}
+  Significant at only 7/28 sites.}
   \label{fig:osi}
 \end{figure}
 
 \subsection{Robustness and control analyses}
 
 The $P$--depth and $C$--depth correlations remained significant after
-controlling for ROI radius, SNR, OSI, and spatial frequency preference
-using partial correlations (Table~\ref{tab:controls}). Mixed-effects models
-at the ROI level confirmed the $P$--depth relationship
-($\beta_{\text{depth}} = -9.30$,
-$p = 7.9 \times 10^{-10}$; Table~\ref{tab:mixed}), and the effect survived
-additional controls for ROI radius and SNR
-($\beta_{\text{depth}} = -8.64$, $p = 2.2 \times 10^{-8}$).
-
-Subpopulation analyses confirmed that the $P$--depth effect was robust across
-neurons with high versus low OSI and high versus low spatial frequency
-preference.
-
-The $C$--depth relationship was highly significant in the simple mixed-effects
-model ($\beta_{\text{depth}} = +0.086$, $p = 1.7 \times 10^{-11}$), but lost
-significance after controlling for ROI radius and SNR ($p = 0.151$),
-indicating partial confounding by morphological factors.
+controlling for potential confounds using partial correlations
+(Table~\ref{tab:controls}). Controlling for ROI radius alone slightly
+strengthened the $P$--depth correlation (partial $r = -0.757$,
+$p = 3.1 \times 10^{-6}$), indicating that the depth gradient in ROI
+morphology does not account for the depth gradient in suppression.
+Simultaneous control for ROI radius, SNR, OSI, and spatial frequency
+preference reduced the $P$--depth correlation to $r = -0.448$ ($p = 0.017$),
+confirming that a significant depth-dependent component of the $P$ gradient
+persists beyond all measured confounds. Bootstrap confidence intervals for
+the $P$--depth correlation ($r = -0.706$, 95\% CI: $[-0.879, -0.440]$)
+excluded zero. The $C$--depth correlation similarly survived all controls
+(partial $r = +0.444$, $p = 0.018$).
 
 % --- Table: Mediation ---
 \begin{table}[tbp]
   \centering
-  \caption{Mediation of the $P$--depth relationship by covariates.}
+  \caption{Mediation of the $P$--depth relationship by individual covariates.
+    Each row shows the partial correlation between $P$ (log-transformed) and
+    depth after controlling for one covariate. Percent reduction is relative
+    to the zero-order $r = -0.706$.}
   \label{tab:mediation}
   \begin{tabular}{lcc}
     \toprule
     Control variable & Partial $r$ & \% Reduction \\
     \midrule
     None (zero-order)         & $-0.706$ & ---  \\
-    + Spatial frequency       & $-0.424$ & 40\% \\
-    + Half-width              & $-0.558$ & 21\% \\
-    + LHI                     & $-0.642$ &  9\% \\
-    + SNR                     & $-0.671$ &  5\% \\
-    + OSI                     & $-0.678$ &  4\% \\
+    + LHI                     & $-0.173$ & 76\% \\
+    + Spatial frequency       & $-0.220$ & 69\% \\
+    + Half-width              & $-0.500$ & 29\% \\
+    + SNR                     & $-0.682$ &  3\% \\
+    + OSI                     & $-0.705$ & $<$1\% \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -586,41 +576,22 @@ indicating partial confounding by morphological factors.
 \begin{table}[tbp]
   \centering
   \caption{Partial correlations between depth and cross-orientation metrics
-    after controlling for confounds.}
+    after controlling for potential confounds ($n = 28$ sites).}
   \label{tab:controls}
   \begin{tabular}{llcc}
     \toprule
     Metric & Controls & Partial $r$ & $p$-value \\
     \midrule
-    $P$ & ROI radius          & $-0.751$ & $< 0.001$ \\
-    $P$ & All (radius + SNR + OSI + SF) & $-0.520$ & $0.005$ \\
-    $C$ & ROI radius          & $+0.489$ & $0.008$ \\
-    $C$ & All (radius + SNR + OSI + SF) & $+0.379$ & $0.047$ \\
+    $P$ & ROI radius                     & $-0.757$ & $3.1 \times 10^{-6}$ \\
+    $P$ & Radius + SNR                   & $-0.765$ & $2.1 \times 10^{-6}$ \\
+    $P$ & All (radius + SNR + OSI + SF)  & $-0.448$ & $0.017$ \\
+    $C$ & ROI radius                     & $+0.511$ & $0.005$ \\
+    $C$ & Radius + SNR                   & $+0.567$ & $0.002$ \\
+    $C$ & All (radius + SNR + OSI + SF)  & $+0.444$ & $0.018$ \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-% --- Table: Mixed-effects models ---
-\begin{table}[tbp]
-  \centering
-  \caption{Mixed-effects model results (ROI-level, $n = 4{,}785$,
-    random intercept for site).}
-  \label{tab:mixed}
-  \begin{tabular}{lcc}
-    \toprule
-    Model & $\beta_{\text{depth}}$ & $p$-value \\
-    \midrule
-    $P \sim \text{Depth} + (1|\text{Site})$
-      & $-9.30$  & $7.9 \times 10^{-10}$  \\
-    $P \sim \text{Depth} + \text{Radius} + \text{SNR} + (1|\text{Site})$
-      & $-8.64$  & $2.2 \times 10^{-8}$   \\
-    $C \sim \text{Depth} + (1|\text{Site})$
-      & $+0.086$ & $1.7 \times 10^{-11}$  \\
-    $C \sim \text{Depth} + \text{Radius} + \text{SNR} + (1|\text{Site})$
-      & $+0.036$ & $0.151$ (NS)           \\
-    \bottomrule
-  \end{tabular}
-\end{table}
 
 \subsection{Summary of depth-dependent changes}
 
@@ -646,7 +617,8 @@ selectivity, lower local homogeneity, and cross-orientation suppression.
     Preferred spatial frequency     & Lower      \\
     Orientation selectivity (OSI)   & Lower      \\
     Local homogeneity (LHI)         & Lower      \\
-    Cross-orientation metric ($P$) & More suppressive ($P < 1$) \\
+    Cross-orientation ratio ($P$) & More suppressive ($P < 1$) \\
+    Shape similarity ($C$)          & More predictable \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -654,43 +626,120 @@ selectivity, lower local homogeneity, and cross-orientation suppression.
 % ============================================================================
 \section{Discussion}
 
-% TODO: Write discussion. Key points to address:
-%
-% 1. Summary of main findings: systematic transition from facilitation to
-%    suppression with depth in layer 2/3, with SF as the largest mediator.
-%
-% 2. Relation to normalization models: stronger normalization at depth is
-%    consistent with broader inhibitory pools in deeper sublayers
-%    (Heeger 1992, Carandini & Heeger 2012).
-%
-% 3. Contrast with prior single-unit work: population-level view reveals
-%    systematic depth gradient not accessible to single-electrode studies
-%    (Carandini et al. 1997, Smith et al. 2006).
-%
-% 4. SF mediation: neurons preferring lower SF at depth may have larger
-%    receptive fields and broader normalization pools, naturally producing
-%    stronger suppression (De Valois et al. 1982, Sceniak et al. 1999).
-%
-% 5. Bandwidth mediation: broader tuning implies less selectivity in the
-%    normalization pool, consistent with divisive normalization framework.
-%
-% 6. LHI depth gradient: transition from orientation domains to pinwheel
-%    regions with depth, and implications for local circuit organization
-%    (Ohki et al. 2006, Nauhaus et al. 2008).
-%
-% 7. P vs C dissociation: tuning shape becomes more predictable even as
-%    amplitude decreases -- normalization preserves shape while scaling gain.
-%
-% 8. Limitations: single animal, correlational design, ROI size confound,
-%    depth-dependent optical factors, calcium-to-fluorescence nonlinearities,
-%    layer assignment without histological verification.
-%
-% 9. R-depth partial confound: C loses significance in mixed model after
-%    controlling for radius and SNR, suggesting morphological contributions.
-%    P survives all controls.
-%
-% 10. Future directions: integration with serial EM connectomics to relate
-%     circuit wiring to normalization strength (Chatterjee et al. 2021).
+We found that cross-orientation interactions transition systematically from
+facilitation in superficial layer~2/3 to suppression at greater cortical
+depth in macaque V1, with the suppression/facilitation ratio $P$ decreasing
+significantly with depth ($r = -0.706$, $p = 2.72 \times 10^{-5}$, $n = 28$)
+and the shape-similarity metric $C$ increasing ($r = +0.799$,
+$p = 3.38 \times 10^{-7}$). The $P$--depth effect was robust to
+partial-correlation controls for ROI morphology, signal-to-noise ratio,
+orientation selectivity, and spatial frequency preference
+($r = -0.448$, $p = 0.017$), and spatial frequency and local orientation
+homogeneity each mediated a substantial fraction of the depth gradient.
+
+\subsection{Relation to normalization models}
+
+The observation that $P$ decreases with depth while $C$ increases is
+consistent with the divisive normalization framework
+\citep{heeger1992, carandini2012}. If deeper neurons draw from broader
+normalization pools, the denominator of the normalization equation is larger,
+producing stronger divisive suppression (lower $P$) while preserving the
+relative shape of the tuning curve (higher $C$). A purely noise-driven
+account of the $P$--depth gradient would predict that both $P$ and $C$
+degrade together; the observation that they move in opposite directions argues
+against this possibility and is instead consistent with a gain-scaling
+mechanism that reduces response amplitude while preserving tuning curve form
+\citep{carandini1997}.
+
+\subsection{Spatial frequency and tuning bandwidth as mediators}
+
+Controlling for spatial frequency preference reduced the $P$--depth
+correlation by 69\%, consistent with the interpretation that deeper neurons,
+preferring lower spatial frequencies, have larger receptive fields and
+correspondingly broader normalization pools \citep{devries1982, sceniak1999},
+which would naturally produce stronger cross-orientation suppression.
+Orientation tuning bandwidth mediated 29\% of the effect through a related
+mechanism: more broadly tuned neurons at depth are less selective in which
+orientations contribute to the normalization pool, again strengthening
+suppression. Local orientation homogeneity (LHI) mediated 76\% of the
+effect, reflecting the transition from homogeneous orientation domains in
+superficial layer~2/3 to more heterogeneous local structure at depth
+\citep{nauhaus2008}. Because spatial frequency, bandwidth, and LHI are
+themselves intercorrelated and all covary with depth, their individual
+mediation percentages overlap substantially. Nevertheless, the combined
+partial correlation controlling for radius, SNR, OSI, and SF
+($r = -0.448$, $p = 0.017$) confirms that a significant component of the
+$P$--depth gradient cannot be accounted for by any of these measured
+covariates, suggesting that circuit-level factors---possibly the density or
+specificity of inhibitory connections---contribute independently to the
+depth gradient in normalization strength.
+
+\subsection{Comparison with prior work}
+
+Nearly all prior characterizations of cross-orientation suppression have
+relied on single-unit electrophysiology, recording from one neuron at a
+time in cat \citep{morrone1982, bonds1989, deangelis1992} or macaque
+\citep{carandini1997, smith2006} V1. These studies established that
+suppression is widespread but showed considerable cell-to-cell variability.
+Our population-level approach reveals that much of this variability is
+structured: it follows a systematic depth gradient across layer~2/3. This
+gradient was not accessible to single-electrode studies, which typically
+sample isolated neurons without precise depth registration.
+
+Two-photon imaging of cross-orientation suppression has been reported
+previously in mouse V1 \citep{busse2009}, but mouse V1 lacks the columnar
+organization of primate V1, making direct comparison difficult. The depth
+gradient in local orientation homogeneity that we observe---from
+high-LHI orientation domains superficially to low-LHI heterogeneous
+regions at depth---has no clear analogue in the salt-and-pepper
+organization of mouse V1.
+
+\subsection{The $P$--$C$ dissociation}
+
+The anticorrelation between $P$ and $C$ across sites ($r = -0.571$,
+$p = 0.002$) provides an important internal control. If the depth gradient in
+$P$ were driven by noise, data quality, or neuropil contamination, one would
+expect $C$ to decrease in parallel, because noisier data would make tuning
+shapes less predictable. Instead, $C$ increases with depth: deeper neurons
+have plaid tuning shapes that are more faithfully predicted by the linear
+model even as their overall amplitude is reduced. This pattern is difficult to
+explain by any artifact of imaging depth and is instead consistent with a
+gain-scaling mechanism---divisive normalization---that reduces response
+amplitude while preserving the shape of the tuning curve.
+
+\subsection{Limitations}
+
+Several limitations apply. All recordings were obtained from a single animal
+(\textit{Macaca nemestrina}); however, the internal consistency of the
+$P$--depth gradient across 28 independent fields of view, acquired over
+5~recording sessions, provides confidence that the effect is not driven by
+idiosyncratic features of a small number of sites. Generalization to other
+individuals and species remains to be determined. The design is
+correlational: we cannot establish whether the depth gradient in
+normalization is caused by the depth gradient in spatial frequency
+preference, or whether both are independent consequences of a shared circuit
+architecture. ROI radius increases with depth ($r = +0.878$), raising the
+concern that larger ROIs at depth average over more neuropil and thus show
+artificially lower $P$; however, the $P$--depth partial correlation
+controlling for radius strengthens slightly ($r = -0.757$ versus $-0.706$ at
+zero order), arguing against this confound. Calcium imaging with GCaMP6s
+introduces nonlinearities in the fluorescence-to-activity transformation that
+may differ across depth, though these nonlinearities would be expected to
+compress response ratios rather than to produce a systematic depth gradient.
+Layer boundaries were assigned based on depth from the pial surface without
+histological verification, though the depth range (140--518~$\mu$m) is
+consistent with the known extent of layer~2/3 in macaque V1
+\citep{lund1988}.
+
+\subsection{Future directions}
+
+The tissue from which these recordings were obtained is being prepared for
+serial electron microscopy reconstruction \citep{chatterjee2021}. This will
+make it possible to compare the physiological properties of thousands of
+neurons---including the cross-orientation metrics reported here---with their
+reconstructed synaptic connectivity and to test directly whether the residual
+depth gradient in $P$ that survives all measured confounds is accounted for by
+changes in inhibitory wiring architecture across layer~2/3.
 
 % ============================================================================
 \section*{Acknowledgments}

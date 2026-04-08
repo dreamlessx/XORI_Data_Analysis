@@ -93,17 +93,17 @@ def load_metrics(site_name):
     return {k: np.array(v) for k, v in data.items()}
 
 
-def load_covariate(filename):
+def load_covariate(filename, col_idx=3):
     """Load a covariate file (roi_sf.txt, roi_osi.txt, etc.)"""
     data = {}
     with open(ROOT / 'raw_data/bm_data' / filename) as f:
         for line in f.readlines()[2:]:
             parts = line.strip().split()
-            if len(parts) >= 4:
+            if len(parts) >= col_idx + 1:
                 try:
                     site = int(float(parts[0]))
                     roi = int(float(parts[1]))
-                    val = float(parts[3])
+                    val = float(parts[col_idx])
                     if site not in data:
                         data[site] = {}
                     data[site][roi] = val
@@ -315,14 +315,14 @@ def fig1_example_tuning_curves():
 # ============================================================
 
 def fig3_depth():
-    print('Figure 3: P and C vs depth')
+    print('Figure 3: P and C vs depth (4 panels)')
     sd = load_site_depths()
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(DOUBLE_COL, 3.0))
+    fig, axes = plt.subplots(2, 2, figsize=(DOUBLE_COL, 5.5))
+    ax1, ax2, ax3, ax4 = axes[0, 0], axes[0, 1], axes[1, 0], axes[1, 1]
 
     # --- Panel A: P vs depth (log axis) ---
     depths, means, sems = site_means_log2_ratio(sd)
-    # Convert back for display on log axis
     means_ratio = 2**means
     sems_lower = 2**(means - sems)
     sems_upper = 2**(means + sems)
@@ -335,48 +335,80 @@ def fig3_depth():
                  zorder=3)
     ax1.set_yscale('log', base=2)
 
-    # Regression in log space, display in data coords
-    add_regression(ax1, depths, means_ratio, alpha=0.0)  # invisible
     slope, intercept, *_ = linregress(depths, means)
     xx = np.linspace(depths.min(), depths.max(), 200)
     yy_log = intercept + slope * xx
     ax1.plot(xx, 2**yy_log, '--', color='black', linewidth=1.0, alpha=0.4, zorder=2)
 
     ax1.axhline(1.0, color=COLORS['light'], linewidth=0.8, linestyle='-', zorder=1)
-
-    # Tick labels as actual ratio values
     tick_vals = [0.5, 0.59, 0.71, 0.84, 1.0, 1.19, 1.41, 1.68, 2.0]
     ax1.yaxis.set_major_locator(FixedLocator(tick_vals))
     ax1.yaxis.set_major_formatter(FuncFormatter(
         lambda x, _: f'{x:.2f}' if x < 1 else f'{x:.1f}' if x != int(x) else f'{int(x)}'))
-
     ax1.set_xlabel('Depth (\u03bcm)')
     ax1.set_ylabel('P (ratio)')
     ax1.set_ylim(0.48, 2.1)
-
-    r, p = pearsonr(depths, means)
-    stats_text(ax1, r, p, len(depths), 'lower left')
+    r_p, p_p = pearsonr(depths, means)
+    stats_text(ax1, r_p, p_p, len(depths), 'lower left')
 
     # --- Panel B: C vs depth ---
     depths_c, means_c, sems_c = site_means_metric(sd, 'M_C')
-
     ax2.errorbar(depths_c, means_c, yerr=sems_c, fmt='o',
                  color=COLORS['primary'], markersize=5,
                  markeredgecolor='black', markeredgewidth=0.5,
                  ecolor='#666666', elinewidth=0.6, capsize=2, capthick=0.5,
                  zorder=3)
     add_regression(ax2, depths_c, means_c)
-
     ax2.set_xlabel('Depth (\u03bcm)')
     ax2.set_ylabel('C (r-value)')
-
     r_c, p_c = pearsonr(depths_c, means_c)
     stats_text(ax2, r_c, p_c, len(depths_c), 'lower right')
 
+    # --- Panel C: P vs C scatter, colored by depth ---
+    sc = ax3.scatter(means, means_c, c=depths, cmap='viridis', s=40,
+                     edgecolors='black', linewidths=0.5, zorder=3)
+    fig.colorbar(sc, ax=ax3, label='Depth (\u03bcm)', shrink=0.8)
+    add_regression(ax3, means, means_c)
+    ax3.set_xlabel('log$_2$(P)')
+    ax3.set_ylabel('C (r-value)')
+    r_pc, p_pc = pearsonr(means, means_c)
+    stats_text(ax3, r_pc, p_pc, len(means), 'upper right')
+
+    # --- Panel D: Depth-binned summary ---
+    bin_edges = [140, 250, 350, 520]
+    bin_labels = ['140-250', '250-350', '350-520']
+    bin_means_p, bin_sems_p = [], []
+    bin_means_c, bin_sems_c = [], []
+    for i in range(len(bin_edges) - 1):
+        mask = (depths >= bin_edges[i]) & (depths < bin_edges[i+1])
+        if i == len(bin_edges) - 2:
+            mask = (depths >= bin_edges[i]) & (depths <= bin_edges[i+1])
+        bin_vals_p = means[mask]
+        bin_vals_c = means_c[mask]
+        bin_means_p.append(np.mean(bin_vals_p))
+        bin_sems_p.append(np.std(bin_vals_p, ddof=1) / np.sqrt(len(bin_vals_p)) if len(bin_vals_p) > 1 else 0)
+        bin_means_c.append(np.mean(bin_vals_c))
+        bin_sems_c.append(np.std(bin_vals_c, ddof=1) / np.sqrt(len(bin_vals_c)) if len(bin_vals_c) > 1 else 0)
+
+    x_pos = np.arange(len(bin_labels))
+    width = 0.35
+    bars_p = ax4.bar(x_pos - width/2, [2**m for m in bin_means_p], width,
+                     color=COLORS['accent'], edgecolor='black', linewidth=0.5, label='P')
+    bars_c = ax4.bar(x_pos + width/2, bin_means_c, width,
+                     color=COLORS['primary'], edgecolor='black', linewidth=0.5, label='C')
+    ax4.axhline(1.0, color=COLORS['light'], linewidth=0.8, linestyle='--', zorder=1)
+    ax4.set_xticks(x_pos)
+    ax4.set_xticklabels(bin_labels)
+    ax4.set_xlabel('Depth bin (\u03bcm)')
+    ax4.set_ylabel('Mean value')
+    ax4.legend(fontsize=7, loc='upper left', frameon=True, edgecolor='#cccccc')
+
     panel_label(ax1, 'A')
     panel_label(ax2, 'B')
+    panel_label(ax3, 'C')
+    panel_label(ax4, 'D')
 
-    fig.tight_layout(w_pad=2.0)
+    fig.tight_layout(h_pad=1.5, w_pad=2.0)
     save(fig, 'fig3_depth')
 
 
@@ -604,6 +636,110 @@ def fig_covariate_with_corr(fig_num, name, cov_file, cov_col_idx,
 
 
 # ============================================================
+# Figure 8: OSI (3 panels: OSI vs depth, C-OSI, P-OSI)
+# ============================================================
+
+def fig8_osi():
+    """OSI figure with 3 panels: A) OSI vs depth, B) within-site C-OSI, C) within-site P-OSI."""
+    print('Figure 8: OSI (3 panels)')
+    sd = load_site_depths()
+
+    cov_data = load_covariate('roi_osi.txt', col_idx=5)
+
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(DOUBLE_COL + 1.5, 3.0))
+
+    # Panel A: OSI vs depth
+    cov_depths, cov_means, cov_sems = [], [], []
+    for site, depth in sorted(sd.items(), key=lambda x: x[1]):
+        site_num = int(site.replace('site', ''))
+        if site_num not in cov_data:
+            continue
+        vals = list(cov_data[site_num].values())
+        if vals:
+            cov_depths.append(depth)
+            cov_means.append(np.mean(vals))
+            cov_sems.append(np.std(vals, ddof=1) / np.sqrt(len(vals)) if len(vals) > 1 else 0)
+
+    cov_depths = np.array(cov_depths)
+    cov_means = np.array(cov_means)
+    cov_sems = np.array(cov_sems)
+
+    ax1.errorbar(cov_depths, cov_means, yerr=cov_sems, fmt='o',
+                 color=COLORS['accent'], markersize=5,
+                 markeredgecolor='black', markeredgewidth=0.5,
+                 ecolor='#666666', elinewidth=0.6, capsize=2, capthick=0.5, zorder=3)
+    add_regression(ax1, cov_depths, cov_means)
+    ax1.set_xlabel('Depth (\u03bcm)')
+    ax1.set_ylabel('OSI')
+    r1, p1 = pearsonr(cov_depths, cov_means)
+    stats_text(ax1, r1, p1, len(cov_depths), 'lower left')
+
+    # Panels B & C: within-site correlations
+    for ax, metric_key, metric_label in [(ax2, 'M_C', 'C'), (ax3, 'M_S_ratio', 'P')]:
+        corr_depths, corr_rs, corr_ps = [], [], []
+        for site, depth in sorted(sd.items(), key=lambda x: x[1]):
+            site_num = int(site.replace('site', ''))
+            if site_num not in cov_data:
+                continue
+            try:
+                m = load_metrics(site)
+            except FileNotFoundError:
+                continue
+
+            x_vals, y_vals = [], []
+            for i, roi in enumerate(m['ROI']):
+                if int(roi) in cov_data[site_num]:
+                    if metric_key == 'M_S_ratio':
+                        val = m[metric_key][i]
+                        if val > 0:
+                            x_vals.append(cov_data[site_num][int(roi)])
+                            y_vals.append(np.log2(val))
+                    else:
+                        x_vals.append(cov_data[site_num][int(roi)])
+                        y_vals.append(m[metric_key][i])
+
+            if len(x_vals) >= 10:
+                r_val, p_val = pearsonr(x_vals, y_vals)
+                corr_depths.append(depth)
+                corr_rs.append(r_val)
+                corr_ps.append(p_val)
+
+        corr_depths = np.array(corr_depths)
+        corr_rs = np.array(corr_rs)
+        corr_ps = np.array(corr_ps)
+
+        sig = corr_ps < 0.05
+        if np.any(sig):
+            ax.scatter(corr_depths[sig], corr_rs[sig], s=30,
+                       color=COLORS['primary'], edgecolors='black',
+                       linewidths=0.5, zorder=3, label='p < 0.05')
+        if np.any(~sig):
+            ax.scatter(corr_depths[~sig], corr_rs[~sig], s=30,
+                       facecolors='none', edgecolors=COLORS['primary'],
+                       linewidths=0.8, zorder=3, label=r'p $\geq$ 0.05')
+
+        ax.axhline(0, color=COLORS['light'], linewidth=0.8, zorder=1)
+        ax.set_xlabel('Depth (\u03bcm)')
+        ax.set_ylabel(f'Within-site r ({metric_label} vs OSI)')
+
+        n_sig = int(np.sum(sig))
+        mid_r = np.median(corr_rs) if len(corr_rs) > 0 else 0
+        legend_loc = 'upper left' if mid_r < 0 else 'lower left'
+        ax.legend(fontsize=6, loc=legend_loc, frameon=True, edgecolor='#cccccc', fancybox=False)
+        sig_pos = (0.97, 0.97, 'top', 'right') if mid_r < 0 else (0.97, 0.03, 'bottom', 'right')
+        ax.text(sig_pos[0], sig_pos[1], f'{n_sig}/{len(corr_rs)} sig.',
+                transform=ax.transAxes, fontsize=7, va=sig_pos[2], ha=sig_pos[3],
+                color=COLORS['neutral'])
+
+    panel_label(ax1, 'A')
+    panel_label(ax2, 'B')
+    panel_label(ax3, 'C')
+
+    fig.tight_layout(w_pad=1.5)
+    save(fig, 'fig8_osi')
+
+
+# ============================================================
 # Depth profile summary figure
 # ============================================================
 
@@ -617,7 +753,7 @@ def fig_depth_profile():
     ]
 
     sf_data = load_covariate('roi_sf.txt')
-    osi_data = load_covariate('roi_osi.txt')
+    osi_data = load_covariate('roi_osi.txt', col_idx=5)
 
     fig, axes = plt.subplots(2, 2, figsize=(DOUBLE_COL, 5.0))
 
@@ -690,8 +826,7 @@ def main():
     fig1_example_tuning_curves()
     fig3_depth()
     fig4_sf()
-    # fig5 is slow (reads many TC files); skip baseline for now
-    # fig5_baseline()
+    fig5_baseline()
 
     # Figs 6-8: covariate + within-site correlation panels
     fig_covariate_with_corr(
@@ -702,9 +837,7 @@ def main():
         7, 'LHI', 'roi_lhi.txt', 3,
         'LHI', 'M_C', 'C')
 
-    fig_covariate_with_corr(
-        8, 'OSI', 'roi_osi.txt', 3,
-        'OSI', 'M_C', 'C')
+    fig8_osi()
 
     fig_depth_profile()
 

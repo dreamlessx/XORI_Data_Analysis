@@ -1,0 +1,137 @@
+{
+  "n_sites": 28,
+  "zero_order": {
+    "P_depth": {
+      "r": -0.706,
+      "p": "2.72e-05"
+    },
+    "C_depth": {
+      "r": 0.799,
+      "p": "3.38e-07"
+    }
+  },
+  "partial_P": [
+    {
+      "control": "ROI radius",
+      "r": -0.757,
+      "p": "3.057e-06",
+      "n": 28
+    },
+    {
+      "control": "SNR",
+      "r": -0.682,
+      "p": "6.525e-05",
+      "n": 28
+    },
+    {
+      "control": "OSI",
+      "r": -0.705,
+      "p": "2.802e-05",
+      "n": 28
+    },
+    {
+      "control": "SF",
+      "r": -0.22,
+      "p": "2.613e-01",
+      "n": 28
+    },
+    {
+      "control": "Radius + SNR",
+      "r": -0.765,
+      "p": "2.138e-06",
+      "n": 28
+    },
+    {
+      "control": "Radius + SNR + OSI + SF",
+      "r": -0.448,
+      "p": "1.676e-02",
+      "n": 28
+    }
+  ],
+  "partial_C": [
+    {
+      "control": "ROI radius",
+      "r": 0.511,
+      "p": "5.440e-03",
+      "n": 28
+    },
+    {
+      "control": "SNR",
+      "r": 0.809,
+      "p": "1.850e-07",
+      "n": 28
+    },
+    {
+      "control": "OSI",
+      "r": 0.771,
+      "p": "1.549e-06",
+      "n": 28
+    },
+    {
+      "control": "SF",
+      "r": 0.631,
+      "p": "3.137e-04",
+      "n": 28
+    },
+    {
+      "control": "Radius + SNR",
+      "r": 0.567,
+      "p": "1.650e-03",
+      "n": 28
+    },
+    {
+      "control": "Radius + SNR + OSI + SF",
+      "r": 0.444,
+      "p": "1.789e-02",
+      "n": 28
+    }
+  ],
+  "mediation": [
+    {
+      "covariate": "Spatial frequency",
+      "partial_r": -0.22,
+      "p": "2.613e-01",
+      "pct_explained": 68.9
+    },
+    {
+      "covariate": "Half-width",
+      "partial_r": -0.5,
+      "p": "6.721e-03",
+      "pct_explained": 29.1
+    },
+    {
+      "covariate": "LHI",
+      "partial_r": -0.173,
+      "p": "3.790e-01",
+      "pct_explained": 75.5
+    },
+    {
+      "covariate": "SNR",
+      "partial_r": -0.682,
+      "p": "6.525e-05",
+      "pct_explained": 3.4
+    },
+    {
+      "covariate": "OSI",
+      "partial_r": -0.705,
+      "p": "2.802e-05",
+      "pct_explained": 0.1
+    }
+  ],
+  "bootstrap": {
+    "P_depth": {
+      "r": -0.706,
+      "ci_low": -0.879,
+      "ci_high": -0.44
+    },
+    "C_depth": {
+      "r": 0.799,
+      "ci_low": 0.679,
+      "ci_high": 0.892
+    }
+  },
+  "pc_anticorr": {
+    "r": -0.571,
+    "p": "1.51e-03"
+  }
+}
