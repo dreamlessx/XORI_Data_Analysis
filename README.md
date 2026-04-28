@@ -93,8 +93,21 @@ XORI/
 │   ├── outputs/               # Figures and results
 │   └── METHODS.md             # Draft methods section for publication
 ├── stat/                      # Suite2p stat files (ROI spatial masks)
-└── zz_Playground/             # Development workspace
+├── paper/
+│   ├── manuscript.tex         # full draft
+│   ├── manuscript_stats.json  # canonical stat lock
+│   ├── make_figures.py        # generates fig1, fig3..fig9
+│   ├── compute_stats.py       # prints LaTeX-formatted stats
+│   ├── figures/               # PDF + PNG outputs
+│   └── feedback/              # PI feedback artifacts (separate from manuscript)
+├── docs/PIPELINE.md           # detailed operational pipeline doc
+├── Makefile                   # one-command pipeline runner
+├── CLAUDE.md                  # agent-facing project context
+└── README.md                  # this file
 ```
+
+Detailed pipeline reference: [`docs/PIPELINE.md`](docs/PIPELINE.md).
+Project context for agent-driven work: [`CLAUDE.md`](CLAUDE.md).
 
 ---
 
@@ -117,32 +130,33 @@ All metrics are computed per ROI from grating and plaid tuning curve responses.
 ## Setup
 
 ```bash
-python -m venv .venv
+# preferred (uv-managed Python 3.12 venv)
+make env
+
+# or manual
+python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
 ## Running Analyses
 
-### Metric calculation from tuning curves
+The Makefile drives the whole pipeline. Each target also lists its underlying
+script for direct invocation when needed.
+
 ```bash
-python scripts/m_calc/all_metric.py
+make metrics       # → scripts/m_calc/all_metric.py
+make culls         # → scripts/m_calc/{cull_metric,r_cull_metric}.py
+make depth         # → scripts/d_calc/depth.py
+make covariates    # → scripts/bm_calc/{baseline,halfwidth,lhi,osi,size,spatial}.py
+make supp          # → supplementary_analysis/scripts/*.py
+make stats         # → paper/compute_stats.py (prints to stdout)
+make figures       # → paper/make_figures.py (fig1, fig3..fig9)
+make manuscript    # → latexmk paper/manuscript.tex (requires basictex/mactex)
+make all           # full pipeline end-to-end
 ```
 
-### Core depth analysis (ROI maps + depth vs metric plots)
-```bash
-python scripts/d_calc/depth.py
-```
-
-### Covariate analyses (baseline, halfwidth, SF, OSI, LHI, ROI size)
-```bash
-python scripts/bm_calc/baseline.py
-python scripts/bm_calc/halfwidth.py
-python scripts/bm_calc/spatial.py
-python scripts/bm_calc/osi.py
-python scripts/bm_calc/lhi.py
-python scripts/bm_calc/size.py
-```
+For direct script-level operation, see `docs/PIPELINE.md`.
 
 ### Supplementary statistical analyses
 ```bash

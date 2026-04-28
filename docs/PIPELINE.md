@@ -1,76 +1,106 @@
-# XORI Data Analysis
+# XORI Data Pipeline
 
-Comprehensive analysis pipeline for visual cortex spatial frequency processing across cortical depths.
+Operational reference for the XORI cross-orientation analysis pipeline. This is the
+detailed pipeline-level doc. For project orientation and headline results, see the
+top-level `README.md`. For agent-facing project context, see `CLAUDE.md`.
 
 ## Project Overview
 
-This project analyzes depth-dependent patterns in visual cortex processing by examining:
-- Baseline response measurements (log10-transformed, all ROIs)
-- Half-width tuning analysis (orthogonal/normalized, null ROIs)
-- Spatial frequency processing (all ROIs)
-- Orientation selectivity index (OSI) - both circular variance and Gaku's methods (all ROIs)
-- Multiple visual processing metrics (M_S, M_C, M_S_norm, M_S_ratio)
+This project analyzes depth-dependent patterns in cross-orientation interactions
+in macaque V1 layer 2/3 across 4,785 ROIs from 28 fields of view (140-518 um),
+measured with two-photon calcium imaging.
+
+The pipeline computes:
+- Cross-orientation metrics per ROI: P (`M_S_ratio`), C (`M_C`), plus M_S, M_S_norm, M_X, SNR_g, SNR_p
+- Per-site covariate-vs-metric analyses: baseline (log10), bandwidth (HW), SF (log10), OSI (Gaku and circular variance), LHI (2D and 3D), ROI size
+- Depth-correlation analyses with multiple SNR-cull regimes
+- Supplementary statistical analyses: mixed-effects models, partial correlations, mediation, bootstrap CIs
 
 ## Directory Structure
 
 ```
-XORI/
-├── data_baseline/          # Baseline response analysis outputs
-│   └── log10/             # Log10-transformed baseline analysis
-│       └── all_roi/       # All ROIs analysis
-│           ├── metric_site/    # M_S, M_C vs log10(baseline) per site
-│           ├── pearson_site/   # R-values vs depth
-│           └── depth_site/     # Baseline vs depth
-├── data_halfwidth/         # Half-width tuning analysis outputs
-│   └── orthogonal/        # Orthogonal (normalized) half-width analysis
-│       └── null_roi/      # Null ROIs only
-│           ├── metric_site/    # M_S, M_C vs HW_norm per site
-│           ├── pearson_site/   # R-values vs depth
-│           └── depth_site/     # Half-width vs depth
-├── data_spatial/           # Spatial frequency analysis outputs
-│   └── all_roi/           # All ROIs SF analysis
-│       ├── metric_site/   # M_S, M_C vs SF per site
-│       ├── pearson_site/  # R-values vs depth
-│       └── depth_site/    # SF vs depth
-├── data_osi/               # Orientation selectivity index analysis
-│   ├── variance/          # Circular variance method (1 - ocv)
-│   │   ├── metric_site/   # M_S, M_C vs OSI_cv per site
-│   │   ├── pearson_site/  # R-values vs depth
-│   │   └── depth_site/    # OSI_cv vs depth
-│   └── osi/               # Gaku's method (depth of modulation)
-│       ├── metric_site/   # M_S, M_C vs OSI per site
-│       ├── pearson_site/  # R-values vs depth
-│       └── depth_site/    # OSI vs depth
-├── depth_data/             # Comprehensive depth analysis
-│   ├── all_roi/           # All ROIs (no filtering)
-│   ├── cull_roi/          # High-SNR ROIs
-│   │   ├── per_cull/      # Percentage-based culling (top 70%, 80%, 90%)
-│   │   └── thr_cull/      # Threshold-based culling (SNR >= 0.5, 1.0, 1.5)
-│   ├── null_roi/          # Null ROIs only
-│   └── r_cull_roi/        # Low-SNR ROIs (reverse cull)
-│       ├── per_r_cull/    # Bottom 10%, 20%, 30%
-│       └── thr_r_cull/    # SNR < 0.5, 1.0, 1.5
-├── metric_data/            # Calculated metrics per site
-│   ├── all_roi/
-│   ├── cull_roi/
-│   ├── null_roi/
-│   └── r_cull_roi/
+xori/
 ├── raw_data/
-│   └── bm_data/           # Raw experimental data
-│       ├── roi_hw_orth.txt    # Half-width data
-│       ├── roi_sf.txt         # Spatial frequency data
-│       ├── roi_osi.txt        # Orientation selectivity data
-│       └── site_depth.txt     # Site depth measurements
-├── scripts/               # Analysis scripts
-│   ├── bm_calc/          # Baseline & metric calculations
-│   │   ├── baseline_analysis.py    # Log10 baseline (all ROIs)
-│   │   ├── halfwidth_analysis.py   # Orthogonal HW (null ROIs)
-│   │   ├── spatial_analysis.py     # SF analysis (all ROIs)
-│   │   └── osi_analysis.py         # OSI analysis (all ROIs)
-│   ├── d_calc/           # Depth correlation analysis
-│   └── XORI Data Analysis/ # Legacy scripts
-├── stat/                  # Suite2p stat files (ROI masks)
-├── zz_Playground/         # Development workspace
+│   ├── bm_data/                # ROI-level inputs and site metadata
+│   │   ├── roi_hw_orth.txt     # orientation half-width
+│   │   ├── roi_lhi.txt         # local homogeneity index (2D and 3D)
+│   │   ├── roi_osi.txt         # orientation selectivity (Gaku + circular variance)
+│   │   ├── roi_sf.txt          # spatial frequency preference
+│   │   ├── roi_stat.txt        # Suite2p morphology summary
+│   │   └── site_depth.txt      # FOV depth mapping (28 sites)
+│   └── tc_data/                # per-site directories of per-ROI tuning curves (xplot files)
+├── metric_data/                # cross-orientation metrics computed from tc_data
+│   ├── all_roi/                # 28 metrics_siteXXX.txt files (PRIMARY analysis)
+│   ├── cull_roi/               # SNR-thresholded subsets
+│   │   ├── per_cull/{top_70,top_80,top_90}/    # percentile splits, 28 sites each
+│   │   └── thr_cull/{above_0_5,above_1_0,above_1_5}/  # 27 each (site038 legitimately empty at all thresholds)
+│   └── r_cull_roi/             # reverse cull (low-SNR), 28 each
+├── stat/                       # Suite2p stat_siteXXX.npy (28 files, ROI spatial masks)
+├── depth_data/                 # depth correlation analysis outputs (ROI maps + scatter)
+│   ├── all_roi/                # all ROIs, no filtering
+│   ├── cull_roi/{per_cull,thr_cull}/
+│   ├── null_roi/
+│   └── r_cull_roi/{per_r_cull,thr_r_cull}/
+├── data_baseline/log10/all_roi/      # baseline-vs-metrics per site + summary
+├── data_halfwidth/raw/all_roi/       # bandwidth-vs-metrics per site + summary
+├── data_lhi/{2d,3d}/                 # LHI-vs-metrics per site + summary
+├── data_osi/                         # OSI-vs-metrics
+│   ├── osi/                          # Gaku's depth-of-modulation OSI
+│   └── variance/                     # circular-variance OSI (1 − ocv)
+├── data_size/null_roi/               # ROI-size-vs-metrics
+├── data_spatial/{all_roi,all_roi_log10}/    # SF-vs-metrics (raw and log10)
+├── scripts/                          # analysis pipeline
+│   ├── m_calc/
+│   │   ├── all_metric.py             # primary metric calc from tc_data
+│   │   ├── cull_metric.py            # SNR-cull subsets
+│   │   └── r_cull_metric.py          # reverse cull
+│   ├── d_calc/
+│   │   └── depth.py                  # depth correlation analysis
+│   └── bm_calc/
+│       ├── baseline.py
+│       ├── halfwidth.py
+│       ├── lhi.py
+│       ├── osi.py
+│       ├── size.py
+│       └── spatial.py
+├── supplementary_analysis/
+│   ├── METHODS.md                    # draft methods detail
+│   ├── README.md
+│   ├── outputs/                      # 17 result subdirs (mixed_effects, mediation, etc.)
+│   └── scripts/
+│       ├── run_all_analyses.py       # subpopulation, partial corr, bootstrap CIs
+│       ├── additional_analyses.py    # mixed-effects, ROI size confound
+│       └── extended_analyses.py      # multi-metric depth profile, mediation
+├── paper/                            # manuscript + publication figures
+│   ├── manuscript.tex                # 755 lines, full draft
+│   ├── manuscript.pdf
+│   ├── manuscript_stats.json         # CANONICAL numbers (do not regenerate casually)
+│   ├── references.bib                # 32 cites, abbrvnat
+│   ├── make_figures.py               # generates fig1, fig3..fig9
+│   ├── compute_stats.py              # prints LaTeX-formatted stats to stdout
+│   ├── figures/                      # PDF + PNG for fig1, fig3..fig9
+│   └── feedback/                     # PI feedback artifacts (not part of manuscript)
+│       ├── feedback.{md,pdf,tex}
+│       ├── make_feedback_figures.py
+│       └── figures/                  # feedback_*.{pdf,png}
+├── docs/
+│   └── PIPELINE.md                   # this file
+├── Makefile                          # one-command pipeline runner
+├── README.md                         # publication-facing project overview
+├── CLAUDE.md                         # project meta + agent guidance
+├── requirements.txt
+└── .venv/                            # uv-managed Python 3.12 (gitignored)
+```
+
+### Site038 caveat
+
+Site038, the shallowest site at 140 um, contains 134 ROIs but **all** have SNR_g < 0.5.
+The thresholded-cull script (`scripts/m_calc/cull_metric.py:240`) correctly logs
+`"no ROIs meet threshold (skipped)"` and writes no output for this site under any
+of `thr_cull/{above_0_5, above_1_0, above_1_5}/`. This is documented behavior, not
+data exclusion. Site038 is fully retained in `metric_data/all_roi/`, the percentile
+culls (`per_cull/top_70/top_80/top_90`), the reverse culls, and all depth and
+covariate analyses.
 
 ## Data Files
 

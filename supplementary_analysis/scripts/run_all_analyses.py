@@ -23,8 +23,8 @@ from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 
-# Set up paths
-BASE_DIR = Path("/Users/muditagar/XORI_Analysis/XORI")
+# Set up paths. BASE_DIR resolves to the repo root regardless of cwd.
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 RAW_DATA = BASE_DIR / "raw_data" / "bm_data"
 METRIC_DATA = BASE_DIR / "metric_data" / "all_roi"
 STAT_DIR = BASE_DIR / "stat"
