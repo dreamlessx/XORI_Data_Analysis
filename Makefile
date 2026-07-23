@@ -60,7 +60,7 @@ fig2:
 	@if [ -f paper/make_fig2_model_schematic.py ]; then \
 		$(PY) paper/make_fig2_model_schematic.py; \
 	else \
-		echo "paper/make_fig2_model_schematic.py not yet built. See CLAUDE.md §Final push."; \
+		echo "paper/make_fig2_model_schematic.py not yet built. See README.md and docs/PIPELINE.md."; \
 		exit 1; \
 	fi
 

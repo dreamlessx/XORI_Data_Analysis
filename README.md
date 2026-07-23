@@ -102,12 +102,10 @@ XORI/
 │   └── feedback/              # PI feedback artifacts (separate from manuscript)
 ├── docs/PIPELINE.md           # detailed operational pipeline doc
 ├── Makefile                   # one-command pipeline runner
-├── CLAUDE.md                  # agent-facing project context
 └── README.md                  # this file
 ```
 
 Detailed pipeline reference: [`docs/PIPELINE.md`](docs/PIPELINE.md).
-Project context for agent-driven work: [`CLAUDE.md`](CLAUDE.md).
 
 ---
 

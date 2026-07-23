@@ -2,7 +2,7 @@
 
 Operational reference for the XORI cross-orientation analysis pipeline. This is the
 detailed pipeline-level doc. For project orientation and headline results, see the
-top-level `README.md`. For agent-facing project context, see `CLAUDE.md`.
+top-level `README.md`.
 
 ## Project Overview
 
@@ -87,7 +87,6 @@ xori/
 │   └── PIPELINE.md                   # this file
 ├── Makefile                          # one-command pipeline runner
 ├── README.md                         # publication-facing project overview
-├── CLAUDE.md                         # project meta + agent guidance
 ├── requirements.txt
 └── .venv/                            # uv-managed Python 3.12 (gitignored)
 ```
